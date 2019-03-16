@@ -421,9 +421,7 @@ function PlayerManager:_internal_load()
 		end
 
 		for i, name in ipairs(self._global.kit.equipment_slots) do
-			if not self._global.equipment[name] or not name then
-				local ok_name = self._global.default_kit.equipment_slots[i]
-			end
+			local ok_name = self._global.equipment[name] and name or self._global.default_kit.equipment_slots[i]
 
 			if ok_name then
 				local upgrade = tweak_data.upgrades.definitions[ok_name]
@@ -446,17 +444,9 @@ function PlayerManager:_internal_load()
 end
 
 function PlayerManager:_add_level_equipment(player)
-	if Global.running_simulation then
-		local id = managers.editor:layer("Level Settings"):get_setting("simulation_level_id")
-	end
-
-	if id == "none" or not id then
-		id = nil
-	end
-
-	if not id then
-		id = Global.level_data.level_id
-	end
+	local id = Global.running_simulation and managers.editor:layer("Level Settings"):get_setting("simulation_level_id")
+	id = id ~= "none" and id or nil
+	id = id or Global.level_data.level_id
 
 	if not id then
 		return
@@ -595,10 +585,7 @@ function PlayerManager:current_sync_state()
 end
 
 function PlayerManager:set_player_state(state, state_data)
-	if not state then
-		state = self._current_state
-	end
-
+	state = state or self._current_state
 	local carry_data = self:get_my_carry_data()
 
 	if state == "standard" and carry_data then
@@ -616,9 +603,7 @@ function PlayerManager:set_player_state(state, state_data)
 	end
 
 	if self._current_state == "foxhole" then
-		if self:player_unit() then
-			local foxhole = self:player_unit():movement():foxhole_unit()
-		end
+		local foxhole = self:player_unit() and self:player_unit():movement():foxhole_unit()
 
 		if foxhole and foxhole:foxhole():locked() then
 			return
@@ -701,9 +686,7 @@ function PlayerManager:player_unit_name()
 end
 
 function PlayerManager:player_unit(id)
-	if not id then
-		local p_id = 1
-	end
+	local p_id = id or 1
 
 	return self._players[p_id]
 end
@@ -713,13 +696,7 @@ function PlayerManager:local_player()
 end
 
 function PlayerManager:warp_to(pos, rot, id)
-	slot4 = self._players
-
-	if not id then
-		slot5 = 1
-	end
-
-	local player = slot4[slot5]
+	local player = self._players[id or 1]
 
 	if alive(player) then
 		player:movement():warp_to(pos, rot)
@@ -870,11 +847,7 @@ function PlayerManager:on_killshot(killed_unit, variant)
 		damage_ext:restore_health(regen_health_bonus)
 	end
 
-	if not tweak_data.upgrades.on_killshot_cooldown then
-		slot10 = 0
-	end
-
-	self._on_killshot_t = t + slot10
+	self._on_killshot_t = t + (tweak_data.upgrades.on_killshot_cooldown or 0)
 end
 
 function PlayerManager:chk_store_armor_health_kill_counter(killed_unit, variant)
@@ -891,11 +864,7 @@ function PlayerManager:chk_store_armor_health_kill_counter(killed_unit, variant)
 	local damage_ext = player_unit:character_damage()
 
 	if damage_ext and damage_ext:can_store_armor_health() and managers.player:has_category_upgrade("player", "armor_health_store_amount") then
-		if not self._armor_health_store_kill_counter then
-			slot5 = 0
-		end
-
-		self._armor_health_store_kill_counter = slot5
+		self._armor_health_store_kill_counter = self._armor_health_store_kill_counter or 0
 		self._armor_health_store_kill_counter = self._armor_health_store_kill_counter + 1
 
 		if tweak_data.upgrades.armor_health_store_kill_amount <= self._armor_health_store_kill_counter then
@@ -921,11 +890,7 @@ function PlayerManager:on_damage_dealt(unit, damage_info)
 		return
 	end
 
-	if not tweak_data.upgrades.on_damage_dealt_cooldown then
-		slot5 = 0
-	end
-
-	self._on_damage_dealt_t = t + slot5
+	self._on_damage_dealt_t = t + (tweak_data.upgrades.on_damage_dealt_cooldown or 0)
 end
 
 function PlayerManager:on_headshot_dealt(is_kill)
@@ -941,11 +906,7 @@ function PlayerManager:on_headshot_dealt(is_kill)
 		return
 	end
 
-	if not tweak_data.upgrades.on_headshot_dealt_cooldown then
-		slot4 = 0
-	end
-
-	self._on_headshot_dealt_t = t + slot4
+	self._on_headshot_dealt_t = t + (tweak_data.upgrades.on_headshot_dealt_cooldown or 0)
 	local damage_ext = player_unit:character_damage()
 	local regen_armor_bonus = managers.player:upgrade_value("player", "headshot_regen_armor_bonus", 0)
 
@@ -990,9 +951,7 @@ function PlayerManager:_check_damage_to_hot(t, unit, damage_info)
 		return
 	end
 
-	if not data.add_stack_sources then
-		local add_stack_sources = {}
-	end
+	local add_stack_sources = data.add_stack_sources or {}
 
 	if not add_stack_sources.swat_van and unit:base().sentry_gun then
 		return
@@ -1014,12 +973,7 @@ function PlayerManager:unaquire_equipment(upgrade, id)
 		return
 	end
 
-	if managers.player:equipment_in_slot(upgrade.slot) ~= id then
-		slot3 = false
-	else
-		local is_equipped = true
-	end
-
+	local is_equipped = managers.player:equipment_in_slot(upgrade.slot) == id
 	self._global.equipment[id] = nil
 
 	if is_equipped then
@@ -1034,24 +988,8 @@ function PlayerManager:unaquire_equipment(upgrade, id)
 end
 
 function PlayerManager:aquire_upgrade(upgrade)
-	slot2 = self._global.upgrades
-	slot3 = upgrade.category
-
-	if not self._global.upgrades[upgrade.category] then
-		slot4 = {}
-	end
-
-	slot2[slot3] = slot4
-	slot2 = self._global.upgrades[upgrade.category]
-	slot3 = upgrade.upgrade
-	slot4 = math.max
-	slot6 = upgrade.value
-
-	if not self._global.upgrades[upgrade.category][upgrade.upgrade] then
-		slot7 = 0
-	end
-
-	slot2[slot3] = slot4(slot6, slot7)
+	self._global.upgrades[upgrade.category] = self._global.upgrades[upgrade.category] or {}
+	self._global.upgrades[upgrade.category][upgrade.upgrade] = math.max(upgrade.value, self._global.upgrades[upgrade.category][upgrade.upgrade] or 0)
 	local value = tweak_data.upgrades.values[upgrade.category][upgrade.upgrade][upgrade.value]
 
 	if self[upgrade.upgrade] then
@@ -1076,23 +1014,9 @@ function PlayerManager:unaquire_upgrade(upgrade)
 end
 
 function PlayerManager:aquire_incremental_upgrade(upgrade)
-	slot2 = self._global.upgrades
-	slot3 = upgrade.category
-
-	if not self._global.upgrades[upgrade.category] then
-		slot4 = {}
-	end
-
-	slot2[slot3] = slot4
+	self._global.upgrades[upgrade.category] = self._global.upgrades[upgrade.category] or {}
 	local val = self._global.upgrades[upgrade.category][upgrade.upgrade]
-	slot3 = self._global.upgrades[upgrade.category]
-	slot4 = upgrade.upgrade
-
-	if not val then
-		slot5 = 0
-	end
-
-	slot3[slot4] = slot5 + 1
+	self._global.upgrades[upgrade.category][upgrade.upgrade] = (val or 0) + 1
 	local value = tweak_data.upgrades.values[upgrade.category][upgrade.upgrade][self._global.upgrades[upgrade.category][upgrade.upgrade]]
 
 	if self[upgrade.upgrade] then
@@ -1115,14 +1039,7 @@ function PlayerManager:unaquire_incremental_upgrade(upgrade)
 
 	local val = self._global.upgrades[upgrade.category][upgrade.upgrade]
 	val = val - 1
-	slot3 = self._global.upgrades[upgrade.category]
-	slot4 = upgrade.upgrade
-
-	if val <= 0 or not val then
-		slot5 = nil
-	end
-
-	slot3[slot4] = slot5
+	self._global.upgrades[upgrade.category][upgrade.upgrade] = val > 0 and val or nil
 
 	if self._global.upgrades[upgrade.category][upgrade.upgrade] then
 		local value = tweak_data.upgrades.values[upgrade.category][upgrade.upgrade][self._global.upgrades[upgrade.category][upgrade.upgrade]]
@@ -1147,19 +1064,11 @@ end
 
 function PlayerManager:upgrade_value(category, upgrade, default)
 	if not self._global.upgrades[category] then
-		if not default then
-			slot4 = 0
-		end
-
-		return slot4
+		return default or 0
 	end
 
 	if not self._global.upgrades[category][upgrade] then
-		if not default then
-			slot4 = 0
-		end
-
-		return slot4
+		return default or 0
 	end
 
 	local level = self._global.upgrades[category][upgrade]
@@ -1180,22 +1089,14 @@ function PlayerManager:activate_temporary_upgrade(category, upgrade)
 	end
 
 	local time = upgrade_value[2]
-	slot5 = self._temporary_upgrades
-
-	if not self._temporary_upgrades[category] then
-		slot6 = {}
-	end
-
-	slot5[category] = slot6
+	self._temporary_upgrades[category] = self._temporary_upgrades[category] or {}
 	self._temporary_upgrades[category][upgrade] = {
 		expire_time = Application:time() + time
 	}
 end
 
 function PlayerManager:activate_temporary_upgrade_by_level(category, upgrade, level)
-	if not self:upgrade_level(category, upgrade, 0) then
-		local upgrade_level = 0
-	end
+	local upgrade_level = self:upgrade_level(category, upgrade, 0) or 0
 
 	if level > upgrade_level then
 		return
@@ -1208,13 +1109,7 @@ function PlayerManager:activate_temporary_upgrade_by_level(category, upgrade, le
 	end
 
 	local time = upgrade_value[2]
-	slot7 = self._temporary_upgrades
-
-	if not self._temporary_upgrades[category] then
-		slot8 = {}
-	end
-
-	slot7[category] = slot8
+	self._temporary_upgrades[category] = self._temporary_upgrades[category] or {}
 	self._temporary_upgrades[category][upgrade] = {
 		upgrade_value = upgrade_value[1],
 		expire_time = Application:time() + time
@@ -1250,13 +1145,7 @@ function PlayerManager:has_activate_temporary_upgrade(category, upgrade)
 		return false
 	end
 
-	if Application:time() >= self._temporary_upgrades[category][upgrade].expire_time then
-		slot4 = false
-	else
-		slot4 = true
-	end
-
-	return slot4
+	return Application:time() < self._temporary_upgrades[category][upgrade].expire_time
 end
 
 function PlayerManager:get_activate_temporary_expire_time(category, upgrade)
@@ -1274,46 +1163,26 @@ function PlayerManager:get_activate_temporary_expire_time(category, upgrade)
 		return 0
 	end
 
-	if not self._temporary_upgrades[category][upgrade].expire_time then
-		slot4 = 0
-	end
-
-	return slot4
+	return self._temporary_upgrades[category][upgrade].expire_time or 0
 end
 
 function PlayerManager:temporary_upgrade_value(category, upgrade, default)
 	local upgrade_value = self:upgrade_value(category, upgrade)
 
 	if upgrade_value == 0 then
-		if not default then
-			slot5 = 0
-		end
-
-		return slot5
+		return default or 0
 	end
 
 	if not self._temporary_upgrades[category] then
-		if not default then
-			slot5 = 0
-		end
-
-		return slot5
+		return default or 0
 	end
 
 	if not self._temporary_upgrades[category][upgrade] then
-		if not default then
-			slot5 = 0
-		end
-
-		return slot5
+		return default or 0
 	end
 
 	if self._temporary_upgrades[category][upgrade].expire_time < Application:time() then
-		if not default then
-			slot5 = 0
-		end
-
-		return slot5
+		return default or 0
 	end
 
 	if self._temporary_upgrades[category][upgrade].upgrade_value then
@@ -1333,19 +1202,11 @@ end
 
 function PlayerManager:upgrade_level(category, upgrade, default)
 	if not self._global.upgrades[category] then
-		if not default then
-			slot4 = 0
-		end
-
-		return slot4
+		return default or 0
 	end
 
 	if not self._global.upgrades[category][upgrade] then
-		if not default then
-			slot4 = 0
-		end
-
-		return slot4
+		return default or 0
 	end
 
 	local level = self._global.upgrades[category][upgrade]
@@ -1354,11 +1215,7 @@ function PlayerManager:upgrade_level(category, upgrade, default)
 end
 
 function PlayerManager:upgrade_value_by_level(category, upgrade, level, default)
-	if not tweak_data.upgrades.values[category][upgrade][level] and not default then
-		slot5 = 0
-	end
-
-	return slot5
+	return tweak_data.upgrades.values[category][upgrade][level] or default or 0
 end
 
 function PlayerManager:equipped_upgrade_value(equipped, category, upgrade)
@@ -1387,17 +1244,8 @@ end
 
 function PlayerManager:body_armor_value(category, override_value, default)
 	local armor_data = tweak_data.blackmarket.armors[managers.blackmarket:equipped_armor(true, true)]
-	slot5 = self:upgrade_value_by_level("player", "body_armor", category, {})
 
-	if not override_value then
-		slot6 = armor_data.upgrade_level
-	end
-
-	if not slot5[slot6] and not default then
-		slot5 = 0
-	end
-
-	return slot5
+	return self:upgrade_value_by_level("player", "body_armor", category, {})[override_value or armor_data.upgrade_level] or default or 0
 end
 
 function PlayerManager:get_infamy_exp_multiplier()
@@ -1429,14 +1277,8 @@ function PlayerManager:_update_hostage_skills()
 end
 
 function PlayerManager:get_hostage_bonus_multiplier(category)
-	if not managers.groupai or not managers.groupai:state():hostage_count() then
-		local hostages = 0
-	end
-
-	if not self:num_local_minions() then
-		local minions = 0
-	end
-
+	local hostages = managers.groupai and managers.groupai:state():hostage_count() or 0
+	local minions = self:num_local_minions() or 0
 	local multiplier = 0
 	hostages = hostages + minions
 	local hostage_max_num = tweak_data:get_raw_value("upgrades", "hostage_max_num", category)
@@ -1459,14 +1301,8 @@ function PlayerManager:get_hostage_bonus_multiplier(category)
 end
 
 function PlayerManager:get_hostage_bonus_addend(category)
-	if not managers.groupai or not managers.groupai:state():hostage_count() then
-		local hostages = 0
-	end
-
-	if not self:num_local_minions() then
-		local minions = 0
-	end
-
+	local hostages = managers.groupai and managers.groupai:state():hostage_count() or 0
+	local minions = self:num_local_minions() or 0
 	local addend = 0
 	hostages = hostages + minions
 	local hostage_max_num = tweak_data:get_raw_value("upgrades", "hostage_max_num", category)
@@ -1539,16 +1375,7 @@ function PlayerManager:body_armor_skill_multiplier(override_armor)
 	multiplier = multiplier + self:team_upgrade_value("armor", "multiplier", 1) - 1
 	multiplier = multiplier + self:get_hostage_bonus_multiplier("armor") - 1
 	multiplier = multiplier + self:upgrade_value("player", "perk_armor_loss_multiplier", 1) - 1
-	slot5 = self
-	slot3 = self.upgrade_value
-	slot6 = "player"
-	slot7 = tostring
-
-	if not override_armor then
-		slot9 = managers.blackmarket:equipped_armor(true, true)
-	end
-
-	multiplier = multiplier + slot3(slot5, slot6, slot7(slot9) .. "_armor_multiplier", 1) - 1
+	multiplier = multiplier + self:upgrade_value("player", tostring(override_armor or managers.blackmarket:equipped_armor(true, true)) .. "_armor_multiplier", 1) - 1
 
 	return multiplier
 end
@@ -1576,16 +1403,7 @@ end
 
 function PlayerManager:body_armor_skill_addend(override_armor)
 	local addend = 0
-	slot5 = self
-	slot3 = self.upgrade_value
-	slot6 = "player"
-	slot7 = tostring
-
-	if not override_armor then
-		slot9 = managers.blackmarket:equipped_armor(true, true)
-	end
-
-	addend = addend + slot3(slot5, slot6, slot7(slot9) .. "_armor_addend", 0)
+	addend = addend + self:upgrade_value("player", tostring(override_armor or managers.blackmarket:equipped_armor(true, true)) .. "_armor_addend", 0)
 
 	return addend
 end
@@ -1609,11 +1427,7 @@ function PlayerManager:critical_hit_chance()
 	multiplier = multiplier + self:upgrade_value("player", "critical_hit_chance", 1) - 1
 
 	if managers.buff_effect:is_effect_active(BuffEffectManager.EFFECT_PLAYER_CRITICAL_HIT_CHANCE) then
-		if not managers.buff_effect:get_effect_value(BuffEffectManager.EFFECT_PLAYER_CRITICAL_HIT_CHANCE) then
-			slot2 = 1
-		end
-
-		multiplier = multiplier * slot2
+		multiplier = multiplier * (managers.buff_effect:get_effect_value(BuffEffectManager.EFFECT_PLAYER_CRITICAL_HIT_CHANCE) or 1)
 	end
 
 	return multiplier
@@ -1623,14 +1437,7 @@ function PlayerManager:get_value_from_risk_upgrade(risk_upgrade, detection_risk)
 	local risk_value = 0
 
 	if not detection_risk then
-		slot6 = managers.blackmarket
-		slot4 = managers.blackmarket.get_suspicion_offset_of_local
-
-		if not tweak_data.player.SUSPICION_OFFSET_LERP then
-			slot7 = 0.75
-		end
-
-		detection_risk = slot4(slot6, slot7)
+		detection_risk = managers.blackmarket:get_suspicion_offset_of_local(tweak_data.player.SUSPICION_OFFSET_LERP or 0.75)
 		detection_risk = math.round(detection_risk * 100)
 	end
 
@@ -1650,8 +1457,8 @@ function PlayerManager:get_value_from_risk_upgrade(risk_upgrade, detection_risk)
 
 		risk_value = num_steps * value
 
-		if cap and not math.min(cap, risk_value) then
-			risk_value = risk_value
+		if cap then
+			risk_value = math.min(cap, risk_value) or risk_value
 		end
 	end
 
@@ -1671,14 +1478,7 @@ function PlayerManager:health_regen()
 	if self._unit then
 		health_regen = self._unit:character_damage():get_base_health_regen()
 	else
-		slot4 = tweak_data.player
-		slot2 = tweak_data.player.get_tweak_data_for_class
-
-		if not managers.skilltree:get_character_profile_class() then
-			slot5 = "recon"
-		end
-
-		local class_tweak_data = slot2(slot4, slot5)
+		local class_tweak_data = tweak_data.player:get_tweak_data_for_class(managers.skilltree:get_character_profile_class() or "recon")
 		health_regen = class_tweak_data.damage.HEALTH_REGEN
 	end
 
@@ -1861,11 +1661,7 @@ function PlayerManager:weapon_in_slot(slot)
 
 	local weapon = self._global.default_kit.weapon_slots[slot]
 
-	if self._global.weapons[weapon] then
-		slot4 = weapon
-	end
-
-	return slot4
+	return self._global.weapons[weapon] and weapon
 end
 
 function PlayerManager:availible_equipment(slot)
@@ -1897,16 +1693,7 @@ function PlayerManager:toggle_player_rule(rule)
 end
 
 function PlayerManager:set_player_rule(rule, value)
-	slot3 = self._rules
-	slot4 = self._rules[rule]
-
-	if value then
-		slot5 = 1
-	else
-		slot5 = -1
-	end
-
-	slot3[rule] = slot4 + slot5
+	self._rules[rule] = self._rules[rule] + (value and 1 or -1)
 
 	if rule == "no_run" and self:get_player_rule(rule) then
 		local player = self:player_unit()
@@ -1918,21 +1705,11 @@ function PlayerManager:set_player_rule(rule, value)
 end
 
 function PlayerManager:get_player_rule(rule)
-	if self._rules[rule] <= 0 then
-		slot2 = false
-	else
-		slot2 = true
-	end
-
-	return slot2
+	return self._rules[rule] > 0
 end
 
 function PlayerManager:has_deployable_been_used()
-	if not self._peer_used_deployable then
-		slot1 = false
-	end
-
-	return slot1
+	return self._peer_used_deployable or false
 end
 
 function PlayerManager:update_deployable_equipment_to_peer(peer)
@@ -1955,14 +1732,7 @@ end
 
 function PlayerManager:set_synced_deployable_equipment(peer, deployable, amount)
 	local peer_id = peer:id()
-
-	if self._global.synced_deployables[peer_id] then
-		if self._global.synced_deployables[peer_id].deployable ~= deployable then
-			slot5 = false
-		else
-			local only_update_amount = true
-		end
-	end
+	local only_update_amount = self._global.synced_deployables[peer_id] and self._global.synced_deployables[peer_id].deployable == deployable
 
 	if not self._peer_used_deployable and self._global.synced_deployables[peer_id] and (self._global.synced_deployables[peer_id].deployable ~= deployable or self._global.synced_deployables[peer_id].amount ~= amount) then
 		self._peer_used_deployable = true
@@ -2058,13 +1828,7 @@ function PlayerManager:update_synced_ammo_info_to_peers(selection_index, max_cli
 end
 
 function PlayerManager:set_synced_ammo_info(peer_id, selection_index, max_clip, current_clip, current_left, max)
-	slot7 = self._global.synced_ammo_info
-
-	if not self._global.synced_ammo_info[peer_id] then
-		slot8 = {}
-	end
-
-	slot7[peer_id] = slot8
+	self._global.synced_ammo_info[peer_id] = self._global.synced_ammo_info[peer_id] or {}
 	self._global.synced_ammo_info[peer_id][selection_index] = {
 		max_clip,
 		current_clip,
@@ -2221,14 +1985,7 @@ function PlayerManager:get_all_synced_carry()
 end
 
 function PlayerManager:aquire_team_upgrade(upgrade)
-	slot2 = self._global.team_upgrades
-	slot3 = upgrade.category
-
-	if not self._global.team_upgrades[upgrade.category] then
-		slot4 = {}
-	end
-
-	slot2[slot3] = slot4
+	self._global.team_upgrades[upgrade.category] = self._global.team_upgrades[upgrade.category] or {}
 	self._global.team_upgrades[upgrade.category][upgrade.upgrade] = upgrade.value
 
 	self:update_team_upgrades_to_peers()
@@ -2262,14 +2019,7 @@ function PlayerManager:unaquire_team_upgrade(upgrade_definition)
 		return
 	end
 
-	slot3 = self._global.team_upgrades[upgrade_definition.upgrade.category]
-	slot4 = upgrade_definition.upgrade.upgrade
-
-	if val <= 0 or not val then
-		slot5 = nil
-	end
-
-	slot3[slot4] = slot5
+	self._global.team_upgrades[upgrade_definition.upgrade.category][upgrade_definition.upgrade.upgrade] = val > 0 and val or nil
 
 	self:update_team_upgrades_to_peers()
 end
@@ -2284,19 +2034,11 @@ function PlayerManager:team_upgrade_value(category, upgrade, default)
 	end
 
 	if not self._global.team_upgrades[category] then
-		if not default then
-			slot4 = 0
-		end
-
-		return slot4
+		return default or 0
 	end
 
 	if not self._global.team_upgrades[category][upgrade] then
-		if not default then
-			slot4 = 0
-		end
-
-		return slot4
+		return default or 0
 	end
 
 	local level = self._global.team_upgrades[category][upgrade]
@@ -2350,20 +2092,8 @@ function PlayerManager:clear_synced_team_upgrades(peer_id)
 end
 
 function PlayerManager:add_synced_team_upgrade(peer_id, category, upgrade, level)
-	slot5 = self._global.synced_team_upgrades
-
-	if not self._global.synced_team_upgrades[peer_id] then
-		slot6 = {}
-	end
-
-	slot5[peer_id] = slot6
-	slot5 = self._global.synced_team_upgrades[peer_id]
-
-	if not self._global.synced_team_upgrades[peer_id][category] then
-		slot6 = {}
-	end
-
-	slot5[category] = slot6
+	self._global.synced_team_upgrades[peer_id] = self._global.synced_team_upgrades[peer_id] or {}
+	self._global.synced_team_upgrades[peer_id][category] = self._global.synced_team_upgrades[peer_id][category] or {}
 	self._global.synced_team_upgrades[peer_id][category][upgrade] = level
 end
 
@@ -2396,39 +2126,15 @@ end
 
 function PlayerManager:update_equipment_possession_to_peers(equipment, amount)
 	local peer_id = managers.network:session():local_peer():id()
-	slot6 = managers.network:session()
-	slot4 = managers.network.session().send_to_peers_synched
-	slot7 = "sync_equipment_possession"
-	slot8 = peer_id
-	slot9 = equipment
 
-	if not amount then
-		slot10 = 1
-	end
-
-	slot4(slot6, slot7, slot8, slot9, slot10)
+	managers.network:session():send_to_peers_synched("sync_equipment_possession", peer_id, equipment, amount or 1)
 	self:set_synced_equipment_possession(peer_id, equipment, amount)
 end
 
 function PlayerManager:set_synced_equipment_possession(peer_id, equipment, amount)
-	if self._global.synced_equipment_possession[peer_id] then
-		local only_update_amount = self._global.synced_equipment_possession[peer_id][equipment]
-	end
-
-	slot5 = self._global.synced_equipment_possession
-
-	if not self._global.synced_equipment_possession[peer_id] then
-		slot6 = {}
-	end
-
-	slot5[peer_id] = slot6
-	slot5 = self._global.synced_equipment_possession[peer_id]
-
-	if not amount then
-		slot6 = 1
-	end
-
-	slot5[equipment] = slot6
+	local only_update_amount = self._global.synced_equipment_possession[peer_id] and self._global.synced_equipment_possession[peer_id][equipment]
+	self._global.synced_equipment_possession[peer_id] = self._global.synced_equipment_possession[peer_id] or {}
+	self._global.synced_equipment_possession[peer_id][equipment] = amount or 1
 	local character_data = managers.criminals:character_data_by_peer_id(peer_id)
 
 	if character_data and character_data.panel_id then
@@ -2492,17 +2198,11 @@ function PlayerManager:transfer_special_equipment(peer_id, include_custody)
 			if equipment_data and not equipment_data.avoid_tranfer then
 				local equipment_lost = true
 				local amount_to_transfer = amount
-
-				if not equipment_data.transfer_quantity then
-					local max_amount = 1
-				end
+				local max_amount = equipment_data.transfer_quantity or 1
 
 				for _, p in ipairs(peers) do
 					local id = p:id()
-
-					if not self._global.synced_equipment_possession[id] or not self._global.synced_equipment_possession[id][name] then
-						local peer_amount = 0
-					end
+					local peer_amount = self._global.synced_equipment_possession[id] and self._global.synced_equipment_possession[id][name] or 0
 
 					if max_amount > peer_amount then
 						local transfer_amount = math.min(amount_to_transfer, max_amount - peer_amount)
@@ -2607,39 +2307,19 @@ function PlayerManager:_turret_drop_out(peer)
 end
 
 function PlayerManager:add_equipment(params)
-	slot2 = tweak_data.equipments
-
-	if not params.equipment then
-		slot3 = params.name
-	end
-
-	if slot2[slot3] then
+	if tweak_data.equipments[params.equipment or params.name] then
 		self:_add_equipment(params)
 
 		return
 	end
 
-	slot2 = tweak_data.equipments.specials
-
-	if not params.equipment then
-		slot3 = params.name
-	end
-
-	if slot2[slot3] then
+	if tweak_data.equipments.specials[params.equipment or params.name] then
 		self:add_special(params)
 
 		return
 	end
 
-	slot4 = Application
-	slot2 = Application.error
-	slot5 = "No equipment or special equipment named"
-
-	if not params.equipment then
-		slot6 = params.name
-	end
-
-	slot2(slot4, slot5, slot6)
+	Application:error("No equipment or special equipment named", params.equipment or params.name)
 end
 
 function PlayerManager:_add_equipment(params)
@@ -2651,26 +2331,10 @@ function PlayerManager:_add_equipment(params)
 
 	local equipment = params.equipment
 	local tweak_data = tweak_data.equipments[equipment]
-
-	if not params.amount then
-		if not tweak_data.quantity then
-			slot4 = 0
-		end
-
-		local amount = slot4 + self:equiptment_upgrade_value(equipment, "quantity")
-	end
-
-	if not params.icon and tweak_data then
-		local icon = tweak_data.icon
-	end
-
-	if not params.use_function_name and tweak_data then
-		local use_function_name = tweak_data.use_function_name
-	end
-
-	if not use_function_name then
-		local use_function = nil
-	end
+	local amount = params.amount or (tweak_data.quantity or 0) + self:equiptment_upgrade_value(equipment, "quantity")
+	local icon = params.icon or tweak_data and tweak_data.icon
+	local use_function_name = params.use_function_name or tweak_data and tweak_data.use_function_name
+	local use_function = use_function_name or nil
 
 	table.insert(self._equipment.selections, {
 		equipment = equipment,
@@ -2679,13 +2343,7 @@ function PlayerManager:_add_equipment(params)
 		action_timer = tweak_data.action_timer
 	})
 
-	slot8 = self._equipment
-
-	if not self._equipment.selected_index then
-		slot9 = 1
-	end
-
-	slot8.selected_index = slot9
+	self._equipment.selected_index = self._equipment.selected_index or 1
 
 	self:update_deployable_equipment_amount_to_peers(equipment, amount)
 	managers.hud:add_item({
@@ -2748,13 +2406,7 @@ function PlayerManager:has_equipment(equipment)
 end
 
 function PlayerManager:has_deployable_left(equipment)
-	if self:get_equipment_amount(equipment) <= 0 then
-		slot2 = false
-	else
-		slot2 = true
-	end
-
-	return slot2
+	return self:get_equipment_amount(equipment) > 0
 end
 
 function PlayerManager:select_next_item()
@@ -2762,13 +2414,7 @@ function PlayerManager:select_next_item()
 		return
 	end
 
-	slot1 = self._equipment
-
-	if self._equipment.selected_index + 1 > #self._equipment.selections or not (self._equipment.selected_index + 1) then
-		slot2 = 1
-	end
-
-	slot1.selected_index = slot2
+	self._equipment.selected_index = self._equipment.selected_index + 1 <= #self._equipment.selections and self._equipment.selected_index + 1 or 1
 end
 
 function PlayerManager:select_previous_item()
@@ -2776,13 +2422,7 @@ function PlayerManager:select_previous_item()
 		return
 	end
 
-	slot1 = self._equipment
-
-	if self._equipment.selected_index - 1 < 1 or not (self._equipment.selected_index - 1) then
-		slot2 = #self._equipment.selections
-	end
-
-	slot1.selected_index = slot2
+	self._equipment.selected_index = self._equipment.selected_index - 1 >= 1 and self._equipment.selected_index - 1 or #self._equipment.selections
 end
 
 function PlayerManager:clear_equipment()
@@ -2796,16 +2436,7 @@ end
 
 function PlayerManager:from_server_equipment_place_result(selected_index, unit)
 	if alive(unit) then
-		slot5 = unit:equipment()
-		slot3 = unit.equipment().from_server_sentry_gun_place_result
-
-		if selected_index == 0 then
-			slot6 = false
-		else
-			slot6 = true
-		end
-
-		slot3(slot5, slot6)
+		unit:equipment():from_server_sentry_gun_place_result(selected_index ~= 0)
 	end
 
 	local equipment = self._equipment.selections[selected_index]
@@ -2816,10 +2447,7 @@ function PlayerManager:from_server_equipment_place_result(selected_index, unit)
 
 	local new_amount = Application:digest_value(equipment.amount, false) - 1
 	equipment.amount = Application:digest_value(new_amount, true)
-
-	if not self._global.equipment then
-		local equipments_available = {}
-	end
+	local equipments_available = self._global.equipment or {}
 
 	if managers.player:has_category_upgrade("player", "carry_sentry_and_trip") and equipments_available.sentry_gun and equipments_available.trip_mine and new_amount == 0 then
 		if equipment.equipment == "trip_mine" and not self:has_equipment("sentry_gun") then
@@ -2880,14 +2508,7 @@ function PlayerManager:selected_equipment_name()
 		return ""
 	end
 
-	slot4 = managers.localization
-	slot2 = managers.localization.text
-
-	if not tweak_data.equipments[equipment_data.equipment].text_id then
-		slot5 = ""
-	end
-
-	return slot2(slot4, slot5)
+	return managers.localization:text(tweak_data.equipments[equipment_data.equipment].text_id or "")
 end
 
 function PlayerManager:selected_equipment_limit_movement()
@@ -2897,11 +2518,7 @@ function PlayerManager:selected_equipment_limit_movement()
 		return false
 	end
 
-	if not tweak_data.equipments[equipment_data.equipment].limit_movement then
-		slot2 = false
-	end
-
-	return slot2
+	return tweak_data.equipments[equipment_data.equipment].limit_movement or false
 end
 
 function PlayerManager:selected_equipment_deploying_text()
@@ -2921,11 +2538,7 @@ function PlayerManager:selected_equipment_sound_start()
 		return false
 	end
 
-	if not tweak_data.equipments[equipment_data.equipment].sound_start then
-		slot2 = false
-	end
-
-	return slot2
+	return tweak_data.equipments[equipment_data.equipment].sound_start or false
 end
 
 function PlayerManager:selected_equipment_sound_interupt()
@@ -2935,11 +2548,7 @@ function PlayerManager:selected_equipment_sound_interupt()
 		return false
 	end
 
-	if not tweak_data.equipments[equipment_data.equipment].sound_interupt then
-		slot2 = false
-	end
-
-	return slot2
+	return tweak_data.equipments[equipment_data.equipment].sound_interupt or false
 end
 
 function PlayerManager:selected_equipment_sound_done()
@@ -2949,11 +2558,7 @@ function PlayerManager:selected_equipment_sound_done()
 		return false
 	end
 
-	if not tweak_data.equipments[equipment_data.equipment].sound_done then
-		slot2 = false
-	end
-
-	return slot2
+	return tweak_data.equipments[equipment_data.equipment].sound_done or false
 end
 
 function PlayerManager:use_selected_equipment(unit)
@@ -2994,32 +2599,14 @@ function PlayerManager:check_selected_equipment_placement_valid(player)
 	end
 
 	if equipment_data.equipment == "trip_mine" or equipment_data.equipment == "ecm_jammer" then
-		if player:equipment():valid_look_at_placement(tweak_data.equipments[equipment_data.equipment]) then
-			slot3 = true
-		else
-			slot3 = false
-		end
-
-		return slot3
+		return player:equipment():valid_look_at_placement(tweak_data.equipments[equipment_data.equipment]) and true or false
 	elseif equipment_data.equipment == "sentry_gun" or equipment_data.equipment == "ammo_bag" or equipment_data.equipment == "doctor_bag" or equipment_data.equipment == "first_aid_kit" or equipment_data.equipment == "bodybags_bag" then
-		if player:equipment():valid_shape_placement(equipment_data.equipment, tweak_data.equipments[equipment_data.equipment]) then
-			slot3 = true
-		else
-			slot3 = false
-		end
-
-		return slot3
+		return player:equipment():valid_shape_placement(equipment_data.equipment, tweak_data.equipments[equipment_data.equipment]) and true or false
 	elseif equipment_data.equipment == "armor_kit" then
 		return true
 	end
 
-	if player:equipment():valid_placement(tweak_data.equipments[equipment_data.equipment]) then
-		slot3 = true
-	else
-		slot3 = false
-	end
-
-	return slot3
+	return player:equipment():valid_placement(tweak_data.equipments[equipment_data.equipment]) and true or false
 end
 
 function PlayerManager:selected_equipment_deploy_timer()
@@ -3036,21 +2623,14 @@ function PlayerManager:selected_equipment_deploy_timer()
 		multiplier = managers.player:upgrade_value(equipment_tweak_data.upgrade_deploy_time_multiplier.category, equipment_tweak_data.upgrade_deploy_time_multiplier.upgrade, 1)
 	end
 
-	if not equipment_tweak_data.deploy_time then
-		slot4 = 1
-	end
-
-	return slot4 * multiplier
+	return (equipment_tweak_data.deploy_time or 1) * multiplier
 end
 
 function PlayerManager:remove_equipment(equipment_id)
 	local equipment, index = self:equipment_data_by_name(equipment_id)
 	local new_amount = Application:digest_value(equipment.amount, false) - 1
 	equipment.amount = Application:digest_value(new_amount, true)
-
-	if not self._global.equipment then
-		local equipments_available = {}
-	end
+	local equipments_available = self._global.equipment or {}
 
 	if managers.player:has_category_upgrade("player", "carry_sentry_and_trip") and equipments_available.sentry_gun and equipments_available.trip_mine and new_amount == 0 then
 		if equipment.equipment == "trip_mine" and not self:has_equipment("sentry_gun") then
@@ -3077,12 +2657,7 @@ end
 function PlayerManager:verify_equipment(peer_id, equipment_id)
 	if peer_id == 0 then
 		local id = "asset_" .. tostring(equipment_id)
-
-		if not self._asset_equipment then
-			slot4 = {}
-		end
-
-		self._asset_equipment = slot4
+		self._asset_equipment = self._asset_equipment or {}
 
 		if not tweak_data.equipments.max_amount[id] or self._asset_equipment[id] and tweak_data.equipments.max_amount[id] < self._asset_equipment[id] + 1 then
 			local peer = managers.network:session():server_peer()
@@ -3092,13 +2667,7 @@ function PlayerManager:verify_equipment(peer_id, equipment_id)
 			return false
 		end
 
-		slot4 = self._asset_equipment
-
-		if not self._asset_equipment[id] then
-			slot5 = 0
-		end
-
-		slot4[id] = slot5 + 1
+		self._asset_equipment[id] = (self._asset_equipment[id] or 0) + 1
 
 		return true
 	end
@@ -3141,9 +2710,7 @@ function PlayerManager:register_grenade(peer_id)
 end
 
 function PlayerManager:add_special(params)
-	if not params.equipment then
-		local name = params.name
-	end
+	local name = params.equipment or params.name
 
 	if not tweak_data.equipments.specials[name] then
 		Application:error("Special equipment " .. name .. " doesn't exist!")
@@ -3152,20 +2719,10 @@ function PlayerManager:add_special(params)
 	end
 
 	local unit = self:player_unit()
-
-	if params.amount then
-		slot4 = true
-	else
-		local respawn = false
-	end
-
+	local respawn = params.amount and true or false
 	local equipment = tweak_data.equipments.specials[name]
 	local special_equipment = self._equipment.specials[name]
-
-	if not params.amount then
-		local amount = equipment.quantity
-	end
-
+	local amount = params.amount or equipment.quantity
 	local extra = self:_equipped_upgrade_value(equipment) + self:upgrade_value(name, "quantity")
 
 	if name == "cable_tie" then
@@ -3174,23 +2731,8 @@ function PlayerManager:add_special(params)
 
 	if special_equipment then
 		if equipment.max_quantity or equipment.quantity or params.transfer and equipment.transfer_quantity then
-			if not special_equipment.amount or not Application:digest_value(special_equipment.amount, false) then
-				local dedigested_amount = 1
-			end
-
-			if self:has_category_upgrade(name, "quantity_unlimited") then
-				slot10 = -1
-			else
-				slot10 = math.min
-				slot12 = dedigested_amount + amount
-
-				if (not params.transfer or not equipment.transfer_quantity) and not equipment.max_quantity then
-					slot13 = equipment.quantity
-				end
-
-				local new_amount = slot10(slot12, slot13 + extra)
-			end
-
+			local dedigested_amount = special_equipment.amount and Application:digest_value(special_equipment.amount, false) or 1
+			local new_amount = self:has_category_upgrade(name, "quantity_unlimited") and -1 or slot10(slot12, slot13 + extra)
 			special_equipment.amount = Application:digest_value(new_amount, true)
 
 			managers.hud:set_special_equipment_amount(name, new_amount)
@@ -3223,62 +2765,21 @@ function PlayerManager:add_special(params)
 	local quantity = nil
 
 	if not params.transfer then
-		if self:has_category_upgrade(name, "quantity_unlimited") then
-			quantity = -1
-		elseif equipment.quantity then
-			if respawn then
-				slot12 = math.min
-				slot14 = params.amount
-
-				if not equipment.max_quantity and not equipment.quantity then
-					slot15 = 1
-				end
-
-				if not slot12(slot14, slot15 + extra) and equipment.quantity then
-					slot12 = math.min
-					slot14 = amount + extra
-
-					if not equipment.max_quantity and not equipment.quantity then
-						slot15 = 1
-					end
-
-					quantity = slot12(slot14, slot15 + extra)
-				end
-			end
-		end
+		quantity = self:has_category_upgrade(name, "quantity_unlimited") and -1 or equipment.quantity and (respawn and math.min(params.amount, (equipment.max_quantity or equipment.quantity or 1) + extra) or equipment.quantity and math.min(amount + extra, (equipment.max_quantity or equipment.quantity or 1) + extra))
 	else
 		quantity = params.amount
 	end
 
-	slot14 = managers.hud
-	slot12 = managers.hud.add_special_equipment
-	slot15 = {
+	managers.hud:add_special_equipment({
 		id = name,
-		icon = icon
-	}
-
-	if not quantity then
-		if equipment.transfer_quantity then
-			slot16 = 1
-		else
-			slot16 = nil
-		end
-	end
-
-	slot15.amount = slot16
-
-	slot12(slot14, slot15)
+		icon = icon,
+		amount = quantity or equipment.transfer_quantity and 1 or nil
+	})
 	self:update_equipment_possession_to_peers(name, quantity)
 
-	slot12 = self._equipment.specials
-	slot13 = {}
-
-	if not quantity or not Application:digest_value(quantity, true) then
-		slot14 = nil
-	end
-
-	slot13.amount = slot14
-	slot12[name] = slot13
+	self._equipment.specials[name] = {
+		amount = quantity and Application:digest_value(quantity, true) or nil
+	}
 
 	if equipment.player_rule then
 		self:set_player_rule(equipment.player_rule, true)
@@ -3309,19 +2810,8 @@ function PlayerManager:_can_pickup_special_equipment(special_equipment, name)
 	if special_equipment.amount then
 		local equipment = tweak_data.equipments.specials[name]
 		local extra = self:_equipped_upgrade_value(equipment)
-		slot5 = Application:digest_value(special_equipment.amount, false)
 
-		if not equipment.max_quantity and not equipment.quantity then
-			slot6 = 1
-		end
-
-		if slot5 >= slot6 + extra then
-			slot5 = false
-		else
-			slot5 = true
-		end
-
-		return slot5, not not equipment.max_quantity
+		return Application:digest_value(special_equipment.amount, false) < (equipment.max_quantity or equipment.quantity or 1) + extra, not not equipment.max_quantity
 	end
 
 	return false
@@ -3364,9 +2854,7 @@ function PlayerManager:remove_special(name, all)
 		return
 	end
 
-	if special_equipment.amount then
-		local special_amount = Application:digest_value(special_equipment.amount, false)
-	end
+	local special_amount = special_equipment.amount and Application:digest_value(special_equipment.amount, false)
 
 	if special_amount and special_amount ~= -1 then
 		if all then
@@ -3438,9 +2926,7 @@ function PlayerManager:add_grenade_amount(amount)
 end
 
 function PlayerManager:refill_grenades(amount)
-	if not amount then
-		local fill_amount = self:get_max_grenades()
-	end
+	local fill_amount = amount or self:get_max_grenades()
 
 	self:add_grenade_amount(fill_amount)
 end
@@ -3466,14 +2952,7 @@ end
 function PlayerManager:set_synced_grenades(peer_id, grenade, amount)
 	Application:debug("[PlayerManager:set_synced_grenades]", peer_id, grenade, amount)
 
-	if self._global.synced_grenades[peer_id] then
-		if self._global.synced_grenades[peer_id].grenade ~= grenade then
-			slot4 = false
-		else
-			local only_update_amount = true
-		end
-	end
-
+	local only_update_amount = self._global.synced_grenades[peer_id] and self._global.synced_grenades[peer_id].grenade == grenade
 	local digested_amount = Application:digest_value(amount, true)
 	self._global.synced_grenades[peer_id] = {
 		grenade = grenade,
@@ -3503,71 +2982,33 @@ end
 function PlayerManager:can_throw_grenade()
 	local peer_id = managers.network:session():local_peer():id()
 
-	if self:get_grenade_amount(peer_id) <= 0 then
-		slot2 = false
-	else
-		slot2 = true
-	end
-
-	return slot2
+	return self:get_grenade_amount(peer_id) > 0
 end
 
 function PlayerManager:get_max_grenades_by_peer_id(peer_id)
-	if managers.network:session() then
-		local peer = managers.network:session():peer(peer_id)
-	end
+	local peer = managers.network:session() and managers.network:session():peer(peer_id)
 
-	if not peer or not self:get_max_grenades(peer:grenade_id()) then
-		slot3 = 0
-	end
-
-	return slot3
+	return peer and self:get_max_grenades(peer:grenade_id()) or 0
 end
 
 function PlayerManager:get_max_grenades(grenade_id)
-	if not grenade_id then
-		grenade_id = managers.blackmarket:equipped_grenade()
-	end
-
+	grenade_id = grenade_id or managers.blackmarket:equipped_grenade()
 	local upgrade_amount = self:upgrade_value("player", "grenade_quantity", 0)
 
-	if tweak_data.projectiles[grenade_id] then
-		if not tweak_data.projectiles[grenade_id].max_amount then
-			slot3 = 0
-		end
-
-		slot3 = slot3 + upgrade_amount
-	end
-
-	return slot3
+	return tweak_data.projectiles[grenade_id] and (tweak_data.projectiles[grenade_id].max_amount or 0) + upgrade_amount
 end
 
 function PlayerManager:got_max_grenades()
 	local peer_id = managers.network:session():local_peer():id()
 
-	if self:get_max_grenades_by_peer_id(peer_id) > self:get_grenade_amount(peer_id) then
-		slot2 = false
-	else
-		slot2 = true
-	end
-
-	return slot2
+	return self:get_max_grenades_by_peer_id(peer_id) <= self:get_grenade_amount(peer_id)
 end
 
 function PlayerManager:has_grenade(peer_id)
-	if not peer_id then
-		peer_id = managers.network:session():local_peer():id()
-	end
-
+	peer_id = peer_id or managers.network:session():local_peer():id()
 	local synced_grenade = self:get_synced_grenades(peer_id)
 
-	if synced_grenade and synced_grenade.grenade then
-		slot3 = true
-	else
-		slot3 = false
-	end
-
-	return slot3
+	return synced_grenade and synced_grenade.grenade and true or false
 end
 
 function PlayerManager:on_throw_grenade()
@@ -3588,11 +3029,7 @@ function PlayerManager:set_carry(carry_id, carry_multiplier, dye_initiated, has_
 	end
 
 	local title = managers.localization:text("hud_carrying_announcement_title")
-
-	if carry_tweak.name_id then
-		local type_text = managers.localization:text(carry_tweak.name_id)
-	end
-
+	local type_text = carry_tweak.name_id and managers.localization:text(carry_tweak.name_id)
 	local text = managers.localization:text("hud_carrying_announcement", {
 		CARRY_TYPE = type_text
 	})
@@ -3611,15 +3048,7 @@ function PlayerManager:set_carry(carry_id, carry_multiplier, dye_initiated, has_
 		end
 	end
 
-	slot14 = self
-	slot12 = self.update_synced_carry_to_peers
-	slot15 = carry_id
-
-	if not carry_multiplier then
-		slot16 = 1
-	end
-
-	slot12(slot14, slot15, slot16, dye_initiated, has_dye_pack, dye_value_multiplier)
+	self:update_synced_carry_to_peers(carry_id, carry_multiplier or 1, dye_initiated, has_dye_pack, dye_value_multiplier)
 	managers.hud:set_teammate_carry_info(HUDManager.PLAYER_PANEL, nil, carry_id)
 	managers.hud:show_carry_item(carry_id)
 
@@ -3739,10 +3168,7 @@ function PlayerManager:switch_carry_to_ragdoll(unit)
 end
 
 function PlayerManager:server_drop_carry(carry_id, carry_multiplier, dye_initiated, has_dye_pack, dye_value_multiplier, position, rotation, dir, throw_distance_multiplier_upgrade_level, zipline_unit, peer)
-	if not tweak_data.carry[carry_id].unit then
-		local unit_name = tweak_data.carry.default_lootbag
-	end
-
+	local unit_name = tweak_data.carry[carry_id].unit or tweak_data.carry.default_lootbag
 	local unit = World:spawn_unit(Idstring(unit_name), position, rotation)
 	local world = managers.worldcollection:get_world_from_pos(position)
 
@@ -3750,44 +3176,8 @@ function PlayerManager:server_drop_carry(carry_id, carry_multiplier, dye_initiat
 		world:register_spawned_unit(unit)
 	end
 
-	slot17 = managers.network:session()
-	slot15 = managers.network.session().send_to_peers_synched
-	slot18 = "sync_carry_data"
-	slot19 = unit
-	slot20 = carry_id
-	slot21 = carry_multiplier
-	slot22 = dye_initiated
-	slot23 = has_dye_pack
-	slot24 = dye_value_multiplier
-	slot25 = position
-	slot26 = dir
-	slot27 = throw_distance_multiplier_upgrade_level
-	slot28 = zipline_unit
-
-	if not peer or not peer:id() then
-		slot29 = 0
-	end
-
-	slot15(slot17, slot18, slot19, slot20, slot21, slot22, slot23, slot24, slot25, slot26, slot27, slot28, slot29)
-
-	slot17 = self
-	slot15 = self.sync_carry_data
-	slot18 = unit
-	slot19 = carry_id
-	slot20 = carry_multiplier
-	slot21 = dye_initiated
-	slot22 = has_dye_pack
-	slot23 = dye_value_multiplier
-	slot24 = position
-	slot25 = dir
-	slot26 = throw_distance_multiplier_upgrade_level
-	slot27 = zipline_unit
-
-	if not peer or not peer:id() then
-		slot28 = 0
-	end
-
-	slot15(slot17, slot18, slot19, slot20, slot21, slot22, slot23, slot24, slot25, slot26, slot27, slot28)
+	managers.network:session():send_to_peers_synched("sync_carry_data", unit, carry_id, carry_multiplier, dye_initiated, has_dye_pack, dye_value_multiplier, position, dir, throw_distance_multiplier_upgrade_level, zipline_unit, peer and peer:id() or 0)
+	self:sync_carry_data(unit, carry_id, carry_multiplier, dye_initiated, has_dye_pack, dye_value_multiplier, position, dir, throw_distance_multiplier_upgrade_level, zipline_unit, peer and peer:id() or 0)
 
 	return unit
 end
@@ -3806,9 +3196,7 @@ function PlayerManager:sync_carry_data(unit, carry_id, carry_multiplier, dye_ini
 	if alive(zipline_unit) then
 		zipline_unit:zipline():attach_bag(unit)
 	else
-		if not tweak_data.carry[carry_id].throw_power then
-			local throw_power = tweak_data.carry.default_throw_power
-		end
+		local throw_power = tweak_data.carry[carry_id].throw_power or tweak_data.carry.default_throw_power
 
 		self:switch_carry_to_ragdoll(unit)
 		unit:push(100, dir * throw_power * throw_distance_multiplier)
@@ -3850,11 +3238,7 @@ function PlayerManager:force_drop_carry()
 end
 
 function PlayerManager:set_carry_temporary_data(carry_id, data)
-	if not self._temporary_carry_data then
-		slot3 = {}
-	end
-
-	self._temporary_carry_data = slot3
+	self._temporary_carry_data = self._temporary_carry_data or {}
 	self._temporary_carry_data[carry_id] = data
 end
 
@@ -3905,11 +3289,7 @@ end
 function PlayerManager:is_berserker()
 	local player_unit = self:player_unit()
 
-	if not alive(player_unit) or not player_unit:character_damage() or not player_unit:character_damage():is_berserker() then
-		slot2 = false
-	end
-
-	return slot2
+	return alive(player_unit) and player_unit:character_damage() and player_unit:character_damage():is_berserker() or false
 end
 
 function PlayerManager:get_damage_health_ratio(health_ratio, category)
@@ -3929,17 +3309,7 @@ function PlayerManager:_get_damage_health_ratio_threshold(category)
 end
 
 function PlayerManager:is_damage_health_ratio_active(health_ratio)
-	if (not self:has_category_upgrade("player", "melee_damage_health_ratio_multiplier") or self:get_damage_health_ratio(health_ratio, "melee") <= 0) and (not self:has_category_upgrade("player", "armor_regen_damage_health_ratio_multiplier") or self:get_damage_health_ratio(health_ratio, "armor_regen") <= 0) and (not self:has_category_upgrade("player", "damage_health_ratio_multiplier") or self:get_damage_health_ratio(health_ratio, "damage") <= 0) then
-		if self:has_category_upgrade("player", "movement_speed_damage_health_ratio_multiplier") then
-			if self:get_damage_health_ratio(health_ratio, "movement_speed") <= 0 then
-				slot2 = false
-			end
-		end
-	else
-		slot2 = true
-	end
-
-	return slot2
+	return self:has_category_upgrade("player", "melee_damage_health_ratio_multiplier") and self:get_damage_health_ratio(health_ratio, "melee") > 0 or self:has_category_upgrade("player", "armor_regen_damage_health_ratio_multiplier") and self:get_damage_health_ratio(health_ratio, "armor_regen") > 0 or self:has_category_upgrade("player", "damage_health_ratio_multiplier") and self:get_damage_health_ratio(health_ratio, "damage") > 0 or self:has_category_upgrade("player", "movement_speed_damage_health_ratio_multiplier") and self:get_damage_health_ratio(health_ratio, "movement_speed") > 0
 end
 
 function PlayerManager:get_current_state()
@@ -3949,37 +3319,17 @@ function PlayerManager:get_current_state()
 end
 
 function PlayerManager:is_carrying()
-	if self:get_my_carry_data() then
-		slot1 = true
-	else
-		slot1 = false
-	end
-
-	return slot1
+	return self:get_my_carry_data() and true or false
 end
 
 function PlayerManager:current_carry_id()
 	local my_carry_data = self:get_my_carry_data()
 
-	if not my_carry_data or not my_carry_data.carry_id then
-		slot2 = nil
-	end
-
-	return slot2
+	return my_carry_data and my_carry_data.carry_id or nil
 end
 
 function PlayerManager:carry_blocked_by_cooldown()
-	if not self._carry_blocked_cooldown_t or Application:time() >= self._carry_blocked_cooldown_t then
-		slot1 = false
-
-		if false then
-			slot1 = false
-		end
-	else
-		slot1 = true
-	end
-
-	return slot1
+	return self._carry_blocked_cooldown_t and Application:time() < self._carry_blocked_cooldown_t or false
 end
 
 function PlayerManager:can_carry(carry_id)
@@ -4050,13 +3400,7 @@ function PlayerManager:num_local_minions()
 end
 
 function PlayerManager:chk_minion_limit_reached()
-	if self:upgrade_value("player", "convert_enemies_max_minions", 0) > self._local_player_minions then
-		slot1 = false
-	else
-		slot1 = true
-	end
-
-	return slot1
+	return self:upgrade_value("player", "convert_enemies_max_minions", 0) <= self._local_player_minions
 end
 
 function PlayerManager:on_used_body_bag()
@@ -4068,13 +3412,7 @@ function PlayerManager:reset_used_body_bag()
 end
 
 function PlayerManager:chk_body_bags_depleted()
-	if self._local_player_body_bags > 0 then
-		slot1 = false
-	else
-		slot1 = true
-	end
-
-	return slot1
+	return self._local_player_body_bags <= 0
 end
 
 function PlayerManager:_set_body_bags_amount(body_bags_amount)
@@ -4090,13 +3428,7 @@ function PlayerManager:get_body_bags_amount()
 end
 
 function PlayerManager:has_total_body_bags()
-	if self._local_player_body_bags ~= self:total_body_bags() then
-		slot1 = false
-	else
-		slot1 = true
-	end
-
-	return slot1
+	return self._local_player_body_bags == self:total_body_bags()
 end
 
 function PlayerManager:total_body_bags()
@@ -4104,13 +3436,7 @@ function PlayerManager:total_body_bags()
 end
 
 function PlayerManager:has_max_body_bags()
-	if self._local_player_body_bags ~= self:max_body_bags() then
-		slot1 = false
-	else
-		slot1 = true
-	end
-
-	return slot1
+	return self._local_player_body_bags == self:max_body_bags()
 end
 
 function PlayerManager:max_body_bags()
@@ -4131,21 +3457,11 @@ end
 
 function PlayerManager:add_weapon_ammo_gain(name_id, amount)
 	if Application:production_build() then
-		if not self._debug_weapon_ammo_gains then
-			slot3 = {}
-		end
-
-		self._debug_weapon_ammo_gains = slot3
-		slot3 = self._debug_weapon_ammo_gains
-
-		if not self._debug_weapon_ammo_gains[name_id] then
-			slot4 = {
-				total = 0,
-				index = 0
-			}
-		end
-
-		slot3[name_id] = slot4
+		self._debug_weapon_ammo_gains = self._debug_weapon_ammo_gains or {}
+		self._debug_weapon_ammo_gains[name_id] = self._debug_weapon_ammo_gains[name_id] or {
+			total = 0,
+			index = 0
+		}
 		self._debug_weapon_ammo_gains[name_id].total = self._debug_weapon_ammo_gains[name_id].total + amount
 		self._debug_weapon_ammo_gains[name_id].index = self._debug_weapon_ammo_gains[name_id].index + 1
 	end
@@ -4153,11 +3469,7 @@ end
 
 function PlayerManager:report_weapon_ammo_gains()
 	if Application:production_build() then
-		if not self._debug_weapon_ammo_gains then
-			slot1 = {}
-		end
-
-		self._debug_weapon_ammo_gains = slot1
+		self._debug_weapon_ammo_gains = self._debug_weapon_ammo_gains or {}
 
 		for name_id, data in pairs(self._debug_weapon_ammo_gains) do
 			print("WEAPON: " .. tostring(name_id), "AVERAGE AMMO PICKUP: " .. string.format("%3.2f%%", data.total / data.index * 100))
@@ -4191,20 +3503,8 @@ function PlayerManager:load(data)
 	local state = data.PlayerManager
 
 	if state then
-		slot3 = self._global
-
-		if not state.kit then
-			slot4 = self._global.kit
-		end
-
-		slot3.kit = slot4
-		slot3 = self._global
-
-		if not state.viewed_content_updates then
-			slot4 = self._global.viewed_content_updates
-		end
-
-		slot3.viewed_content_updates = slot4
+		self._global.kit = state.kit or self._global.kit
+		self._global.viewed_content_updates = state.viewed_content_updates or self._global.viewed_content_updates
 
 		managers.savefile:add_load_done_callback(callback(self, self, "_verify_loaded_data"))
 		self:set_character_profile_name(state.character_profile_name)
@@ -4214,41 +3514,11 @@ function PlayerManager:load(data)
 		self:set_customization_equiped_upper_name(state.customization_equiped_upper_name)
 		self:set_customization_equiped_lower_name(state.customization_equiped_lower_name)
 
-		slot3 = self._global
-
-		if not state.game_settings_difficulty then
-			slot4 = Global.DEFAULT_DIFFICULTY
-		end
-
-		slot3.game_settings_difficulty = slot4
-		slot3 = self._global
-
-		if not state.game_settings_permission then
-			slot4 = Global.DEFAULT_PERMISSION
-		end
-
-		slot3.game_settings_permission = slot4
-		slot3 = self._global
-
-		if not state.game_settings_drop_in_allowed then
-			slot4 = true
-		end
-
-		slot3.game_settings_drop_in_allowed = slot4
-		slot3 = self._global
-
-		if not state.game_settings_team_ai then
-			slot4 = true
-		end
-
-		slot3.game_settings_team_ai = slot4
-		slot3 = self._global
-
-		if not state.game_settings_auto_kick then
-			slot4 = true
-		end
-
-		slot3.game_settings_auto_kick = slot4
+		self._global.game_settings_difficulty = state.game_settings_difficulty or Global.DEFAULT_DIFFICULTY
+		self._global.game_settings_permission = state.game_settings_permission or Global.DEFAULT_PERMISSION
+		self._global.game_settings_drop_in_allowed = state.game_settings_drop_in_allowed or true
+		self._global.game_settings_team_ai = state.game_settings_team_ai or true
+		self._global.game_settings_auto_kick = state.game_settings_auto_kick or true
 		Global.game_settings.permission = self._global.game_settings_permission
 		Global.game_settings.drop_in_allowed = self._global.game_settings_drop_in_allowed
 		Global.game_settings.team_ai = self._global.game_settings_team_ai
@@ -4261,11 +3531,7 @@ function PlayerManager:set_content_update_viewed(content_update)
 end
 
 function PlayerManager:get_content_update_viewed(content_update)
-	if not self._global.viewed_content_updates[content_update] then
-		slot2 = false
-	end
-
-	return slot2
+	return self._global.viewed_content_updates[content_update] or false
 end
 
 function PlayerManager:_verify_loaded_data()
@@ -4604,10 +3870,7 @@ end
 function PlayerManager:sync_move_to_next_seat(vehicle, peer_id, player, seat_name, previous_seat_name, previous_occupant)
 	local vehicle_ext = vehicle:vehicle_driving()
 	local seat = vehicle_ext._seats[seat_name]
-
-	if not previous_seat_name or not vehicle_ext._seats[previous_seat_name] then
-		local previous_seat = nil
-	end
+	local previous_seat = previous_seat_name and vehicle_ext._seats[previous_seat_name] or nil
 
 	self:_move_to_next_seat(vehicle, peer_id, player, seat, previous_seat, previous_occupant)
 end
@@ -4630,9 +3893,7 @@ function PlayerManager:_move_to_next_seat(vehicle, peer_id, player, seat, previo
 	vehicle:link(Idstring(VehicleDrivingExt.SEAT_PREFIX .. seat.name), player)
 	managers.hud:update_vehicle_label_by_id(vehicle:unit_data().name_label_id, vehicle_ext:_number_in_the_vehicle())
 
-	if not seat.fov then
-		local fov = vehicle_ext._tweak_data.fov
-	end
+	local fov = seat.fov or vehicle_ext._tweak_data.fov
 
 	if fov and player == self:local_player() then
 		player:camera()._camera_unit:base():animate_fov(fov, 0.33)
