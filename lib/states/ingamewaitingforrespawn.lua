@@ -636,7 +636,7 @@ function IngameWaitingForRespawnState:begin_trade()
 			-- Nothing
 		else
 			local _, data = next(crims)
-			slot4 = managers.criminals:character_static_data_by_unit(data.unit).ssuffix
+			local char_code = managers.criminals:character_static_data_by_unit(data.unit).ssuffix
 		end
 	end
 

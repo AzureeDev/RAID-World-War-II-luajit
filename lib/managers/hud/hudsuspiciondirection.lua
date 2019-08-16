@@ -161,8 +161,8 @@ function HUDSuspicionDirection:update_suspicion_indicators()
 	local cam_fwd = managers.player:player_unit():camera():forward()
 
 	for index, indicator in pairs(self._indicators) do
-		local angle = indicator.position - player_pos:normalized():angle(cam_fwd)
-		local cross_prod = indicator.position - player_pos:normalized():cross(cam_fwd)
+		local angle = (indicator.position - player_pos):normalized():angle(cam_fwd)
+		local cross_prod = (indicator.position - player_pos):normalized():cross(cam_fwd)
 		local orientation = cross_prod:dot(math.UP)
 
 		if orientation < 0 then
@@ -263,8 +263,8 @@ function HUDSuspicionDirection:_animate_suspicion(id)
 		local player_pos = managers.player:player_unit():movement():m_pos()
 		local enemy_pos = self._indicators[id].position:with_z(player_pos.z)
 		local cam_fwd = managers.player:player_unit():camera():forward()
-		local angle = enemy_pos - player_pos:normalized():angle(cam_fwd)
-		local cross_prod = enemy_pos - player_pos:normalized():cross(cam_fwd)
+		local angle = (enemy_pos - player_pos):normalized():angle(cam_fwd)
+		local cross_prod = (enemy_pos - player_pos):normalized():cross(cam_fwd)
 		local orientation = cross_prod:dot(math.UP)
 
 		if orientation < 0 then

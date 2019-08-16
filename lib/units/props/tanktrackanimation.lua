@@ -60,7 +60,7 @@ end
 function TankTrackAnimation:update(unit, t, dt)
 	local curr_left_tension_pos = self._left_tesnion:position()
 	local curr_left_pos = self._left_ref_object:position()
-	local forward_dir = curr_left_pos - curr_left_tension_pos:normalized()
+	local forward_dir = (curr_left_pos - curr_left_tension_pos):normalized()
 	local diff_left_pos = curr_left_pos - self._prev_left_pos
 	local diff_left_sign = math.sign(mvector3.dot(diff_left_pos, forward_dir))
 	local len_diff_left = diff_left_pos:length()

@@ -761,7 +761,7 @@ function PlayerStandard:_update_movement(t, dt)
 			local fwd_dot = jump_dir:dot(input_move_vec)
 
 			if fwd_dot < jump_vel then
-				local sustain_dot = input_move_vec:normalized() * jump_vel:dot(jump_dir)
+				local sustain_dot = (input_move_vec:normalized() * jump_vel):dot(jump_dir)
 				local new_move_vec = input_move_vec + jump_dir * (sustain_dot - fwd_dot)
 
 				mvector3.step(achieved_walk_vel, self._last_velocity_xy, new_move_vec, 700 * dt)
@@ -770,7 +770,7 @@ function PlayerStandard:_update_movement(t, dt)
 				mvector3.step(achieved_walk_vel, self._last_velocity_xy, wanted_walk_speed * self._move_dir:normalized(), acceleration * dt)
 			end
 
-			slot14 = nil
+			local fwd_component = nil
 		else
 			mvector3.multiply(mvec_move_dir_normalized, wanted_walk_speed)
 			mvector3.step(achieved_walk_vel, self._last_velocity_xy, mvec_move_dir_normalized, acceleration * dt)
@@ -2277,7 +2277,7 @@ function PlayerStandard:_do_melee_damage(t, bayonet_melee, col_ray)
 			local damage_health_ratio = managers.player:get_damage_health_ratio(health_ratio, "melee")
 
 			if damage_health_ratio > 0 then
-				slot24 = damage_health_ratio
+				local damage_ratio = damage_health_ratio
 			end
 
 			if character_unit:character_damage().dead and not character_unit:character_damage():dead() and managers.enemy:is_enemy(character_unit) and managers.player:has_category_upgrade("temporary", "melee_life_leech") and not managers.player:has_activate_temporary_upgrade("temporary", "melee_life_leech") then
@@ -2988,11 +2988,7 @@ function PlayerStandard:_get_intimidation_action(prime_target, char_table, amoun
 				for _, char in pairs(char_table) do
 					if char.unit_type ~= unit_type_camera and char.unit_type ~= unit_type_teammate and (not is_whisper_mode or not char.unit:movement():cool()) then
 						if char.unit_type == unit_type_civilian then
-							if not amount then
-								slot22 = tweak_data.player.long_dis_interaction.intimidate_strength
-							end
-
-							amount = slot22 * managers.player:upgrade_value("player", "civ_intimidation_mul", 1) * managers.player:team_upgrade_value("player", "civ_intimidation_mul", 1)
+							amount = (amount or tweak_data.player.long_dis_interaction.intimidate_strength) * managers.player:upgrade_value("player", "civ_intimidation_mul", 1) * managers.player:team_upgrade_value("player", "civ_intimidation_mul", 1)
 						end
 
 						if prime_target_key == char.unit:key() then
@@ -3778,7 +3774,7 @@ function PlayerStandard:_start_action_zipline(t, input, zipline_unit)
 		self._state_data.zipline_data.start_pos = self._unit:position()
 		self._state_data.zipline_data.end_pos = self._fwd_ray.position
 		self._state_data.zipline_data.slack = math.max(0, math.abs(self._state_data.zipline_data.start_pos.z - self._state_data.zipline_data.end_pos.z) / 3)
-		self._state_data.zipline_data.tot_t = self._state_data.zipline_data.end_pos - self._state_data.zipline_data.start_pos:length() / 1000
+		self._state_data.zipline_data.tot_t = (self._state_data.zipline_data.end_pos - self._state_data.zipline_data.start_pos):length() / 1000
 	end
 
 	self._state_data.zipline_data.t = 0
@@ -4519,11 +4515,11 @@ function PlayerStandard:_start_action_reload(t)
 		local reload_name_id = tweak_data.animations.reload_name_id or self._equipped_unit:base().name_id
 
 		if self._equipped_unit:base():clip_empty() then
-			slot6 = self._equipped_unit:base():use_shotgun_reload() or self._ext_camera:play_redirect(Idstring("reload_" .. reload_name_id), speed_multiplier)
+			local result = self._equipped_unit:base():use_shotgun_reload() or self._ext_camera:play_redirect(Idstring("reload_" .. reload_name_id), speed_multiplier)
 			self._state_data.reload_expire_t = t + (not self._equipped_unit:base():use_shotgun_reload() and tweak_data.timers.reload_empty or self._equipped_unit:base():use_shotgun_reload() and self._equipped_unit:base():reload_expire_t() or 2.6) / speed_multiplier
 		else
 			reload_anim = "reload_not_empty"
-			slot6 = self._equipped_unit:base():use_shotgun_reload() or self._ext_camera:play_redirect(Idstring("reload_not_empty_" .. reload_name_id), speed_multiplier)
+			local result = self._equipped_unit:base():use_shotgun_reload() or self._ext_camera:play_redirect(Idstring("reload_not_empty_" .. reload_name_id), speed_multiplier)
 			self._state_data.reload_expire_t = t + (not self._equipped_unit:base():use_shotgun_reload() and tweak_data.timers.reload_not_empty or self._equipped_unit:base():use_shotgun_reload() and self._equipped_unit:base():reload_expire_t() or 2.2) / speed_multiplier
 		end
 
@@ -4848,7 +4844,7 @@ function PlayerStandard:call_teammate(line, t, no_gesture, skip_alert, skip_mark
 
 	if voice_type == "come" then
 		interact_type = "cmd_come"
-		slot11 = managers.criminals:character_static_data_by_unit(prime_target.unit).ssuffix
+		local crim_data = managers.criminals:character_static_data_by_unit(prime_target.unit).ssuffix
 	elseif voice_type == "mark_cop" and not skip_mark_cop then
 		local shout_sound = tweak_data.character[prime_target.unit:base()._tweak_table].priority_shout
 

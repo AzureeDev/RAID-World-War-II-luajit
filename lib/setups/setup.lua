@@ -325,26 +325,20 @@ function Setup:load_packages()
 end
 
 function Setup:init_managers(managers)
-	slot2 = Global
-
-	if not Global.game_settings then
-		slot3 = {
-			drop_in_allowed = true,
-			auto_kick = true,
-			job_plan = -1,
-			team_ai = true,
-			search_appropriate_jobs = true,
-			kick_option = 1,
-			permission = "public",
-			is_playing = false,
-			reputation_permission = 0,
-			selected_team_ai = true,
-			level_id = managers.dlc:is_trial() and "raid_trial" or "streaming_level",
-			difficulty = Global.DEFAULT_DIFFICULTY
-		}
-	end
-
-	slot2.game_settings = slot3
+	Global.game_settings = Global.game_settings or {
+		drop_in_allowed = true,
+		auto_kick = true,
+		job_plan = -1,
+		team_ai = true,
+		search_appropriate_jobs = true,
+		kick_option = 1,
+		permission = "public",
+		is_playing = false,
+		reputation_permission = 0,
+		selected_team_ai = true,
+		level_id = managers.dlc:is_trial() and "raid_trial" or "streaming_level",
+		difficulty = Global.DEFAULT_DIFFICULTY
+	}
 
 	managers.dlc:setup()
 

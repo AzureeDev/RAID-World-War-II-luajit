@@ -260,7 +260,7 @@ function TradeManager:_announce_spawn(criminal_name)
 	end
 
 	if criminal_name ~= nil and managers.criminals:character_static_data_by_name(criminal_name) ~= nil and managers.criminals:character_static_data_by_name(criminal_name).ssuffix ~= nil then
-		slot2 = managers.criminals:character_static_data_by_name(criminal_name).ssuffix
+		local character_code = managers.criminals:character_static_data_by_name(criminal_name).ssuffix
 	end
 end
 
@@ -311,13 +311,17 @@ function TradeManager:play_custody_voice(criminal_name)
 		if managers.criminals:local_character_name() == criminal_left then
 			managers.achievment:set_script_data("last_man_standing", true)
 
-			slot3 = managers.groupai:state():bain_state() and managers.criminals:character_static_data_by_name(criminal_left).ssuffix
+			if managers.groupai:state():bain_state() then
+				local character_code = managers.criminals:character_static_data_by_name(criminal_left).ssuffix
+			end
 
 			return
 		end
 	end
 
-	slot2 = managers.groupai:state():bain_state() and managers.criminals:character_static_data_by_name(criminal_name).ssuffix
+	if managers.groupai:state():bain_state() then
+		local character_code = managers.criminals:character_static_data_by_name(criminal_name).ssuffix
+	end
 end
 
 function TradeManager:on_AI_criminal_death(criminal_name, respawn_penalty, hostages_killed, skip_netsend)

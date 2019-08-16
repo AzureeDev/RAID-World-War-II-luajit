@@ -419,7 +419,7 @@ function ReadyUpGui:_spawn_character_units()
 
 		local anim_state_name = "hos_idle_loop_" .. weapon_id
 		local at_time = math.random() * 10
-		slot17 = spawned_unit:play_redirect(Idstring(anim_state_name), at_time)
+		local state = spawned_unit:play_redirect(Idstring(anim_state_name), at_time)
 	end
 end
 

@@ -642,7 +642,7 @@ function TurretWeapon:_upd_puppet_movement()
 	mvector3.multiply(original_direction, 1000)
 
 	local deflection = original_direction:angle(current_direction)
-	local deflection_direction = math.sign(original_direction - current_direction:to_polar_with_reference(current_direction, math.UP).spin)
+	local deflection_direction = math.sign((original_direction - current_direction):to_polar_with_reference(current_direction, math.UP).spin)
 	local spin_max = self._unit:movement()._spin_max or deflection
 	local deflection_normalized = deflection / math.abs(spin_max)
 	local redirect_animation = "e_so_mg34_aim_right"
@@ -653,7 +653,7 @@ function TurretWeapon:_upd_puppet_movement()
 		redirect_state = Idstring("std/stand/so/idle/e_so_mg34_aim_left")
 	end
 
-	local position_difference = self._puppet_unit:position() - self._SO_object:position():length()
+	local position_difference = (self._puppet_unit:position() - self._SO_object:position()):length()
 
 	if position_difference > 1 then
 		self._puppet_unit:warp_to(self._SO_object:rotation(), self._SO_object:position())
@@ -1216,8 +1216,8 @@ function TurretWeapon:sync_SO_completed(puppet_unit)
 		return
 	end
 
-	local position_difference = puppet_unit:position() - self._SO_object:position():length()
-	position_difference = puppet_unit:position() - self._SO_object:position():length()
+	local position_difference = (puppet_unit:position() - self._SO_object:position()):length()
+	position_difference = (puppet_unit:position() - self._SO_object:position()):length()
 	self._puppet_unit = puppet_unit
 	self._puppet_unit:unit_data().turret_weapon = self
 	self._last_puppet_position = puppet_unit:position()
@@ -1234,7 +1234,7 @@ function TurretWeapon:sync_cancel_SO()
 end
 
 function TurretWeapon:remove_administered_SO()
-	slot1 = self._SO_data and managers.groupai:state():remove_special_objective(self._SO_data.SO_id)
+	local result = self._SO_data and managers.groupai:state():remove_special_objective(self._SO_data.SO_id)
 end
 
 function TurretWeapon:is_available()

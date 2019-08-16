@@ -123,7 +123,7 @@ function NetworkVoiceChatSTEAM:update()
 						local crim_data = managers.criminals:character_data_by_peer_id(id)
 
 						if crim_data then
-							slot11 = crim_data.mugshot_id
+							local mugshot = crim_data.mugshot_id
 						end
 					end
 				end

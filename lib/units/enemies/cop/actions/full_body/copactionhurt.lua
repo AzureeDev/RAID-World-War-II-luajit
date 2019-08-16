@@ -318,7 +318,7 @@ function CopActionHurt:init(action_desc, common_data)
 
 						if fwd_dot < 0 then
 							local hit_pos = action_desc.hit_pos
-							local hit_vec = hit_pos - common_data.pos:with_z(0):normalized()
+							local hit_vec = (hit_pos - common_data.pos):with_z(0):normalized()
 
 							if mvector3.dot(hit_vec, common_data.right) > 0 then
 								dir_str = "r"
@@ -373,7 +373,7 @@ function CopActionHurt:init(action_desc, common_data)
 
 			if fwd_dot < 0 then
 				local hit_pos = action_desc.hit_pos
-				local hit_vec = hit_pos - common_data.pos:with_z(0):normalized()
+				local hit_vec = (hit_pos - common_data.pos):with_z(0):normalized()
 
 				if mvector3.dot(hit_vec, common_data.right) > 0 then
 					dir_str = "r"
@@ -737,7 +737,7 @@ function CopActionHurt:init(action_desc, common_data)
 			end
 		elseif action_type == "death" then
 			if not managers.groupai:state():is_police_called() then
-				slot13 = self._unit:sound():say("death_stealth")
+				local result = self._unit:sound():say("death_stealth")
 			else
 				self._unit:sound():say("death")
 			end

@@ -1534,7 +1534,7 @@ function FPCameraPlayerBase:get_weapon_offsets()
 	local weapon = self._parent_unit:inventory():equipped_unit()
 	local object = weapon:get_object(Idstring("a_sight"))
 
-	print(object:position() - self._unit:position():rotate_HP(self._unit:rotation():inverse()))
+	print((object:position() - self._unit:position()):rotate_HP(self._unit:rotation():inverse()))
 	print(self._unit:rotation():inverse() * object:rotation())
 end
 
@@ -1543,7 +1543,7 @@ function FPCameraPlayerBase:get_weapon_part_offsets(part_id)
 	local weapon_part_position, weapon_part_rotation = self:_get_position_and_rotation(weapon, Idstring(part_id))
 
 	if weapon_part_position and weapon_part_rotation then
-		print(weapon_part_position - self._unit:position():rotate_HP(self._unit:rotation():inverse()))
+		print((weapon_part_position - self._unit:position()):rotate_HP(self._unit:rotation():inverse()))
 		print(self._unit:rotation():inverse() * weapon_part_rotation)
 	else
 		print("Weapon part '" .. tostring(part_id) .. "' not found!")

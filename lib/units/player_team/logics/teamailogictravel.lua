@@ -497,7 +497,7 @@ function TeamAILogicTravel._draw_debug_unit_cones(cones)
 	local brush = Draw:brush(Color.green:with_alpha(0.5), 2)
 
 	for _, c in ipairs(cones) do
-		local h = c.cone_top - c.cone_base:length()
+		local h = (c.cone_top - c.cone_base):length()
 		local angle = c.cone_angle / 2
 		local radius = math.tan(angle) * h
 

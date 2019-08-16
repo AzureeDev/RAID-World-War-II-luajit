@@ -90,7 +90,7 @@ function PlayerEquipment:use_ammo_bag()
 		if Network:is_client() then
 			managers.network:session():send_to_host("place_deployable_bag", "AmmoBagBase", pos, rot, ammo_upgrade_lvl)
 		else
-			slot5 = AmmoBagBase.spawn(pos, rot, ammo_upgrade_lvl, managers.network:session():local_peer():id())
+			local unit = AmmoBagBase.spawn(pos, rot, ammo_upgrade_lvl, managers.network:session():local_peer():id())
 		end
 
 		if managers.player:has_category_upgrade("temporary", "no_ammo_cost") then
@@ -119,7 +119,7 @@ function PlayerEquipment:use_doctor_bag()
 		if Network:is_client() then
 			managers.network:session():send_to_host("place_deployable_bag", "DoctorBagBase", pos, rot, amount_upgrade_lvl)
 		else
-			slot5 = DoctorBagBase.spawn(pos, rot, amount_upgrade_lvl, managers.network:session():local_peer():id())
+			local unit = DoctorBagBase.spawn(pos, rot, amount_upgrade_lvl, managers.network:session():local_peer():id())
 		end
 
 		return true
@@ -144,7 +144,7 @@ function PlayerEquipment:use_first_aid_kit()
 		if Network:is_client() then
 			managers.network:session():send_to_host("place_deployable_bag", "FirstAidKitBase", pos, rot, upgrade_lvl)
 		else
-			slot5 = FirstAidKitBase.spawn(pos, rot, upgrade_lvl, managers.network:session():local_peer():id())
+			local unit = FirstAidKitBase.spawn(pos, rot, upgrade_lvl, managers.network:session():local_peer():id())
 		end
 
 		return true
@@ -182,7 +182,7 @@ function PlayerEquipment:use_satchel()
 			self._ecm_jammer_placement_requested = true
 		else
 			local rot = Rotation(ray.normal, math.UP)
-			slot3 = SatchelBase.spawn(ray.position, rot)
+			local unit = SatchelBase.spawn(ray.position, rot)
 		end
 
 		return true

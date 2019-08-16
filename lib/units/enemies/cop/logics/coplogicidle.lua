@@ -746,7 +746,7 @@ function CopLogicIdle._upd_curious_reaction(data)
 	local distance = attention_obj.dis
 
 	if (not attention_obj.settings.turn_around_range or distance < attention_obj.settings.turn_around_range) and data.objective and data.objective.rot then
-		local angle_to_att_obj = attention_obj.m_pos - data.m_pos:to_polar_with_reference(data.unit:movement():m_rot():y(), math.UP).spin
+		local angle_to_att_obj = (attention_obj.m_pos - data.m_pos):to_polar_with_reference(data.unit:movement():m_rot():y(), math.UP).spin
 
 		if turn_angle_limit < angle_to_att_obj then
 			CopLogicBase._turn_by_spin(data, my_data, angle_to_att_obj)

@@ -455,7 +455,7 @@ end
 function SentryGunMovement:_is_target_close_behind(target_dir)
 	local player_angle = self._m_head_fwd:angle(target_dir)
 	local player_behind = math.cos(player_angle) < 0
-	local player_distance = self._m_last_attention_pos - self._m_head_pos:length()
+	local player_distance = (self._m_last_attention_pos - self._m_head_pos):length()
 	local abandon_distance = self._tweak.abandon_proximity or 500
 	local result = player_behind and player_distance < abandon_distance
 
@@ -464,7 +464,7 @@ end
 
 function SentryGunMovement:_is_target_close(target_dir)
 	local player_angle = self._m_head_fwd:angle(target_dir)
-	local player_distance = self._m_last_attention_pos - self._m_head_pos:length()
+	local player_distance = (self._m_last_attention_pos - self._m_head_pos):length()
 	local abandon_distance = self._tweak.abandon_proximity or 500
 	local result = player_distance < abandon_distance
 

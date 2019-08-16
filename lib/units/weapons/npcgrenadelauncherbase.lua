@@ -28,9 +28,9 @@ function NPCGrenadeLauncherBase:singleshot(from_pos, direction, dmg_mul, shoot_p
 		local direction = self._obj_fire:rotation():y()
 
 		if fired.hit_pos then
-			direction = fired.hit_pos - self._obj_fire:position():normalized()
+			direction = (fired.hit_pos - self._obj_fire:position()):normalized()
 		elseif target_unit then
-			direction = target_unit:position() - self._obj_fire:position():normalized()
+			direction = (target_unit:position() - self._obj_fire:position()):normalized()
 		end
 
 		local index = tweak_data.blackmarket:get_index_from_projectile_id(self._grenade_id)

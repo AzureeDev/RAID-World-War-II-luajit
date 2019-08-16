@@ -46,7 +46,7 @@ function HUDNameVehicleLabel:_create_name()
 		x = 1,
 		texture = tabs_texture,
 		texture_rect = bag_rect,
-		color = crim_color * 1.1:with_alpha(1)
+		color = (crim_color * 1.1):with_alpha(1)
 	})
 	local bag_number = self._object:text({
 		name = "bag_number",
@@ -86,7 +86,7 @@ function HUDNameVehicleLabel:_create_name()
 		text = utf8.to_upper("Fixing"),
 		font = HUDNameLabel.PLAYER_NAME_FONT,
 		font_size = HUDNameLabel.PLAYER_NAME_FONT_SIZE,
-		color = crim_color * 1.1:with_alpha(1)
+		color = (crim_color * 1.1):with_alpha(1)
 	})
 end
 

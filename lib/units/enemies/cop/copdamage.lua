@@ -805,7 +805,7 @@ function CopDamage:damage_fire(attack_data)
 
 	if self._head_body_name and attack_data.variant ~= "stun" then
 		head = attack_data.col_ray.body and self._head_body_key and attack_data.col_ray.body:key() == self._head_body_key
-		slot7 = self._unit:body(self._head_body_name)
+		local body = self._unit:body(self._head_body_name)
 	end
 
 	local attacker = attack_data.attacker_unit
