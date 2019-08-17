@@ -74,7 +74,7 @@ function ElementEscort:start_escort_path(unit)
 				},
 				next_escort_point = next_element or last_element,
 				break_so = break_so,
-				end_rot = (next_element or last_element) and next_element or last_element:value("rotation")
+				end_rot = (next_element or last_element) and (next_element or last_element):value("rotation")
 			})
 
 			if unit:escort() then

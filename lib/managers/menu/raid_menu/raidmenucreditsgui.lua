@@ -42,7 +42,7 @@ function RaidMenuCreditsGui:_build_credits_panel(file)
 		file = file .. files[lang_key] or file
 	end
 
-	local list = PackageManager:script_data(self.FILE_EXTENSION:id(), self.PATH .. file:id())
+	local list = PackageManager:script_data(self.FILE_EXTENSION:id(), (self.PATH .. file):id())
 	local ypos = 0
 	local safe_rect_pixels = managers.gui_data:scaled_size()
 	local res = RenderSettings.resolution

@@ -358,7 +358,7 @@ function HUDMultipleChoiceWheel:remove_option(option_id)
 end
 
 function HUDMultipleChoiceWheel:_fade_in_options()
-	for slot4 = 1, #self._options, 1 do
+	for i = 1, #self._options, 1 do
 	end
 end
 

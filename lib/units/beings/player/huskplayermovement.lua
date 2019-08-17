@@ -364,23 +364,11 @@ function HuskPlayerMovement:set_character_anim_variables()
 		return
 	end
 
-	if not self._char_model_names[char_name] then
-		slot2 = ""
-	end
-
-	if not managers.player._player_mesh_suffix then
-		slot3 = ""
-	end
-
-	local mesh_name = slot2 .. slot3
+	local mesh_name = (self._char_model_names[char_name] or "") .. (managers.player._player_mesh_suffix or "")
 	local mesh_obj = self._unit:get_object(Idstring(mesh_name))
 
 	if mesh_obj then
-		slot4 = self._unit.get_object
-		slot7 = Idstring
-		slot9 = self._plr_mesh_name or self._char_model_names.german
-
-		self._unit:get_object(slot7(slot9)):set_visibility(false)
+		self._unit:get_object(Idstring(self._plr_mesh_name or self._char_model_names.german)):set_visibility(false)
 		mesh_obj:set_visibility(true)
 
 		self._plr_mesh_name = mesh_name
@@ -416,21 +404,11 @@ function HuskPlayerMovement:check_visual_equipment()
 end
 
 function HuskPlayerMovement:set_visual_deployable_equipment(deployable, amount)
-	if amount <= 0 then
-		slot3 = false
-	else
-		local visible = true
-	end
-
+	local visible = amount > 0
 	local tweak_data = tweak_data.equipments[deployable]
 	local object_name = tweak_data.visual_object
 	local object_name_ids = Idstring(object_name)
-
-	if not self._current_visual_deployable_equipment then
-		slot7 = object_name_ids
-	end
-
-	self._current_visual_deployable_equipment = slot7
+	self._current_visual_deployable_equipment = self._current_visual_deployable_equipment or object_name_ids
 
 	if self._current_visual_deployable_equipment ~= object_name_ids then
 		self._unit:get_object(self._current_visual_deployable_equipment):set_visibility(false)
@@ -447,10 +425,7 @@ function HuskPlayerMovement:set_visual_carry(carry_id)
 			return
 		end
 
-		if not tweak_data.carry[carry_id].visual_object then
-			local object_name = "g_lootbag"
-		end
-
+		local object_name = tweak_data.carry[carry_id].visual_object or "g_lootbag"
 		self._current_visual_carry_object = self._unit:get_object(Idstring(object_name))
 
 		if not self._current_visual_carry_object then
@@ -588,11 +563,7 @@ function HuskPlayerMovement:get_object(object_name)
 end
 
 function HuskPlayerMovement:detect_look_dir()
-	if not self._sync_look_dir then
-		slot1 = self._look_dir
-	end
-
-	return slot1
+	return self._sync_look_dir or self._look_dir
 end
 
 function HuskPlayerMovement:look_dir()
@@ -616,9 +587,7 @@ function HuskPlayerMovement:_calculate_m_pose()
 		mvector3.set(self._m_newest_pos, self._m_pos)
 	end
 
-	if self._pose_code ~= 2 or not self._crouch_detection_offset_z then
-		local offset_z = mvec3_z(self._m_head_pos) - mvec3_z(self._m_pos)
-	end
+	local offset_z = self._pose_code == 2 and self._crouch_detection_offset_z or mvec3_z(self._m_head_pos) - mvec3_z(self._m_pos)
 
 	mvec3_set_z(det_pos, mvec3_z(det_pos) + offset_z)
 end
@@ -637,27 +606,14 @@ function HuskPlayerMovement:set_position(pos)
 			local metadata = managers.navigation:get_nav_seg_metadata(nav_seg_id)
 
 			self._unit:base():set_suspicion_multiplier("area", metadata.suspicion_mul)
-
-			slot6 = self._unit:base()
-			slot4 = self._unit.base().set_detection_multiplier
-			slot7 = "area"
-
-			if not metadata.detection_mul or not (1 / metadata.detection_mul) then
-				slot8 = nil
-			end
-
-			slot4(slot6, slot7, slot8)
+			self._unit:base():set_detection_multiplier("area", metadata.detection_mul and 1 / metadata.detection_mul or nil)
 			managers.groupai:state():on_criminal_nav_seg_change(self._unit, nav_seg_id)
 		end
 	end
 end
 
 function HuskPlayerMovement:get_location_id()
-	if not self._standing_nav_seg_id or not managers.navigation:get_nav_seg_metadata(self._standing_nav_seg_id).location_id then
-		slot1 = nil
-	end
-
-	return slot1
+	return self._standing_nav_seg_id and managers.navigation:get_nav_seg_metadata(self._standing_nav_seg_id).location_id or nil
 end
 
 function HuskPlayerMovement:set_rotation(rot)
@@ -789,11 +745,7 @@ function HuskPlayerMovement:anim_cbk_spawn_melee_item(unit, graphic_object)
 	local peer = managers.network:session():peer(peer_id)
 	local melee_entry = peer:melee_id()
 	local graphic_object_name = Idstring(graphic_object)
-
-	if not tweak_data.blackmarket.melee_weapons[melee_entry].graphic_objects then
-		local graphic_objects = {}
-	end
-
+	local graphic_objects = tweak_data.blackmarket.melee_weapons[melee_entry].graphic_objects or {}
 	local unit_name = tweak_data.blackmarket.melee_weapons[melee_entry].third_unit
 
 	if unit_name then
@@ -804,16 +756,8 @@ function HuskPlayerMovement:anim_cbk_spawn_melee_item(unit, graphic_object)
 		for a_object, g_object in pairs(graphic_objects) do
 			local g_obj_name = Idstring(g_object)
 			local g_obj = self._melee_item_unit:get_object(g_obj_name)
-			slot20 = g_obj
-			slot18 = g_obj.set_visibility
 
-			if Idstring(a_object) ~= graphic_object_name then
-				slot21 = false
-			else
-				slot21 = true
-			end
-
-			slot18(slot20, slot21)
+			g_obj:set_visibility(Idstring(a_object) == graphic_object_name)
 		end
 
 		if alive(self._unit:inventory():equipped_unit()) and self._unit:inventory():equipped_unit():base().AKIMBO then
@@ -896,40 +840,24 @@ function HuskPlayerMovement:_register_revive_SO()
 		follow_unit = self._unit,
 		nav_seg = self._unit:movement():nav_tracker():nav_segment(),
 		fail_clbk = callback(self, self, "on_revive_SO_failed"),
-		complete_clbk = callback(self, self, "on_revive_SO_completed")
+		complete_clbk = callback(self, self, "on_revive_SO_completed"),
+		action = {
+			align_sync = true,
+			type = "act",
+			body_part = 1,
+			variant = self._state == "arrested" and "untie" or "revive",
+			blocks = {
+				light_hurt = -1,
+				hurt = -1,
+				action = -1,
+				heavy_hurt = -1,
+				aim = -1,
+				walk = -1
+			}
+		},
+		action_duration = tweak_data.interaction[self._state == "arrested" and "free" or "revive"].timer,
+		followup_objective = followup_objective
 	}
-	slot3 = {
-		align_sync = true,
-		type = "act",
-		body_part = 1
-	}
-
-	if self._state == "arrested" then
-		slot4 = "untie"
-	else
-		slot4 = "revive"
-	end
-
-	slot3.variant = slot4
-	slot3.blocks = {
-		light_hurt = -1,
-		hurt = -1,
-		action = -1,
-		heavy_hurt = -1,
-		aim = -1,
-		walk = -1
-	}
-	objective.action = slot3
-	slot3 = tweak_data.interaction
-
-	if self._state == "arrested" then
-		slot4 = "free"
-	else
-		slot4 = "revive"
-	end
-
-	objective.action_duration = slot3[slot4].timer
-	objective.followup_objective = followup_objective
 	local so_descriptor = {
 		interval = 1,
 		AI_group = "friendlies",
@@ -1042,11 +970,7 @@ function HuskPlayerMovement:need_revive()
 end
 
 function HuskPlayerMovement:downed()
-	if not self._need_revive then
-		slot1 = self._need_assistance
-	end
-
-	return slot1
+	return self._need_revive or self._need_assistance
 end
 
 function HuskPlayerMovement:_upd_attention_mask_off(dt)
@@ -1474,17 +1398,7 @@ function HuskPlayerMovement:_upd_sequenced_events(t, dt)
 		self:_start_jumping(next_event)
 	end
 
-	if next_event then
-		if not next_event.commencing then
-			slot6 = next_event.type
-		else
-			slot6 = false
-
-			if false then
-				local event_type = true
-			end
-		end
-	end
+	local event_type = next_event and not next_event.commencing and next_event.type
 
 	if event_type == "freefall" then
 		if self:_start_freefall(next_event) then
@@ -1792,13 +1706,7 @@ function HuskPlayerMovement:_upd_move_standard(t, dt)
 		self:play_redirect("idle")
 	elseif self._ext_anim.idle_full_blend and not self._turning and (waist_twist > 40 or waist_twist < -65) then
 		local angle = waist_twist
-
-		if angle > 0 then
-			slot8 = "l"
-		else
-			local dir_str = "r"
-		end
-
+		local dir_str = angle > 0 and "l" or "r"
 		local redir_name = "turn_" .. dir_str
 		local redir_res = self:play_redirect(redir_name)
 
@@ -1833,49 +1741,23 @@ end
 function HuskPlayerMovement:_is_slowdown_to_next_action()
 	local event_desc = self._sequenced_events[2]
 
-	if event_desc then
-		slot2 = event_desc.is_no_move_slowdown
-	end
-
-	return slot2
+	return event_desc and event_desc.is_no_move_slowdown
 end
 
 function HuskPlayerMovement:_is_anim_move_redirect_forbidden(path_len_remaining)
-	if self._move_data then
-		if not self._ext_anim.landing and self._ext_anim.jumping then
-			if path_len_remaining >= 50 then
-				slot2 = false
-			end
-		end
-	else
-		slot2 = true
-	end
-
-	return slot2
+	return not self._move_data or self._ext_anim.landing or self._ext_anim.jumping and path_len_remaining < 50
 end
 
 function HuskPlayerMovement:_is_anim_idle_redirect_forbidden()
-	if not self._ext_anim.idle then
-		slot1 = self._ext_anim.landing
-	end
-
-	return slot1
+	return self._ext_anim.idle or self._ext_anim.landing
 end
 
 function HuskPlayerMovement:_is_anim_move_speed_forbidden()
-	if not self._ext_anim.jumping then
-		slot1 = self._ext_anim.landing
-	end
-
-	return slot1
+	return self._ext_anim.jumping or self._ext_anim.landing
 end
 
 function HuskPlayerMovement:_is_anim_stop_allowed()
-	if not self._ext_anim.jumping and self._ext_anim.landing then
-		slot1 = self._ext_anim.move
-	end
-
-	return slot1
+	return self._ext_anim.jumping or self._ext_anim.landing and self._ext_anim.move
 end
 
 function HuskPlayerMovement:_is_start_move_velocity_max()
@@ -2125,11 +2007,7 @@ function HuskPlayerMovement:_upd_move_bipod(t, dt)
 	end
 
 	local body_pos = husk_bipod_data.body_pos
-
-	if not body_pos then
-		body_pos = Vector3(self._m_pos.x, self._m_pos.y, self._m_pos.z)
-	end
-
+	body_pos = body_pos or Vector3(self._m_pos.x, self._m_pos.y, self._m_pos.z)
 	self._stance.owner_stance_code = 3
 
 	self:_chk_change_stance()
@@ -2146,7 +2024,7 @@ function HuskPlayerMovement:_upd_move_bipod(t, dt)
 
 	local husk_original_look_direction = Vector3(self._look_dir.x, self._look_dir.y, 0)
 	local target_angle = self._sync_look_dir:angle(self._look_dir)
-	local rotate_direction = math.sign(self._sync_look_dir - self._look_dir:to_polar_with_reference(self._look_dir, math.UP).spin)
+	local rotate_direction = math.sign((self._sync_look_dir - self._look_dir):to_polar_with_reference(self._look_dir, math.UP).spin)
 	local rotate_angle = target_angle * rotate_direction
 	rotate_angle = math.lerp(self._bipod_last_angle, rotate_angle, dt * 2)
 
@@ -2238,12 +2116,8 @@ function HuskPlayerMovement:_upd_move_turret(t, dt)
 	mvector3.multiply(original_direction, 1000)
 
 	local deflection = original_direction:angle(current_direction)
-	local deflection_direction = math.sign(original_direction - current_direction:to_polar_with_reference(current_direction, math.UP).spin)
-
-	if not turret_unit:movement()._spin_max then
-		local spin_max = deflection
-	end
-
+	local deflection_direction = math.sign((original_direction - current_direction):to_polar_with_reference(current_direction, math.UP).spin)
+	local spin_max = turret_unit:movement()._spin_max or deflection
 	local deflection_normalized = math.clamp(math.abs(deflection), 0, math.abs(spin_max)) / math.abs(spin_max)
 
 	if turret_unit:weapon()._puppet_stance and turret_unit:weapon()._puppet_stance == "standing" then
@@ -2272,9 +2146,7 @@ function HuskPlayerMovement:_start_standard(event_desc)
 
 	managers.groupai:state():on_criminal_recovered(self._unit)
 
-	if event_desc then
-		local previous_state = event_desc.previous_state
-	end
+	local previous_state = event_desc and event_desc.previous_state
 
 	if previous_state == "parachuting" or previous_state == "freefall" then
 		local redir_res = self:play_redirect("equip")
@@ -2286,10 +2158,7 @@ function HuskPlayerMovement:_start_standard(event_desc)
 				self._unit:inventory():show_equipped_unit()
 
 				local weap_tweak = weapon:base():weapon_tweak_data()
-
-				if not weap_tweak.husk_hold then
-					local weapon_hold = weap_tweak.hold
-				end
+				local weapon_hold = weap_tweak.husk_hold or weap_tweak.hold
 
 				self._machine:set_parameter(redir_res, "to_" .. weapon_hold, 1)
 			end
@@ -2638,12 +2507,7 @@ function HuskPlayerMovement:_adjust_walk_anim_speed(dt, target_speed)
 end
 
 function HuskPlayerMovement:sync_shot_blank(impact)
-	if self._stance.values[3] >= 0.7 then
-		slot2 = false
-	else
-		local delay = true
-	end
-
+	local delay = self._stance.values[3] < 0.7
 	local f = false
 
 	if not delay then
@@ -2661,11 +2525,7 @@ end
 
 function HuskPlayerMovement:sync_start_auto_fire_sound()
 	if self._auto_firing <= 0 then
-		if self._stance.values[3] >= 0.7 then
-			slot1 = false
-		else
-			local delay = true
-		end
+		local delay = self._stance.values[3] < 0.7
 
 		if delay then
 			self._auto_firing = 1
@@ -2704,11 +2564,7 @@ end
 
 function HuskPlayerMovement:sync_raise_weapon()
 	if self._auto_firing <= 0 then
-		if self._stance.values[3] >= 0.7 then
-			slot1 = false
-		else
-			local delay = true
-		end
+		local delay = self._stance.values[3] < 0.7
 
 		if delay then
 			self._auto_firing = 1
@@ -2809,14 +2665,7 @@ function HuskPlayerMovement:_change_pose(pose_code)
 		return
 	end
 
-	if pose_code == 1 then
-		slot2 = "stand"
-	elseif pose_code == 3 then
-		slot2 = "prone"
-	else
-		local redirect = "crouch"
-	end
-
+	local redirect = pose_code == 1 and "stand" or pose_code == 3 and "prone" or "crouch"
 	self._pose_code = pose_code
 
 	if self._ext_anim[redirect] then
@@ -2832,13 +2681,7 @@ function HuskPlayerMovement:_change_pose(pose_code)
 
 	if move_side then
 		local seg_rel_t = self._machine:segment_relative_time(self._ids_base)
-
-		if self._ext_anim.run then
-			slot6 = "run"
-		else
-			local speed = "walk"
-		end
-
+		local speed = self._ext_anim.run and "run" or "walk"
 		local pose = self._ext_anim.pose
 		local stance = self._stance.name
 
@@ -2992,10 +2835,7 @@ function HuskPlayerMovement:clbk_inventory_event(unit, event)
 		end
 
 		local weap_tweak = weapon:base():weapon_tweak_data()
-
-		if not weap_tweak.husk_hold then
-			local weapon_hold = weap_tweak.hold
-		end
+		local weapon_hold = weap_tweak.husk_hold or weap_tweak.hold
 
 		self._machine:set_global(weapon_hold, 1)
 
@@ -3018,13 +2858,7 @@ function HuskPlayerMovement:current_state_name()
 end
 
 function HuskPlayerMovement:tased()
-	if self._state ~= "tased" then
-		slot1 = false
-	else
-		slot1 = true
-	end
-
-	return slot1
+	return self._state == "tased"
 end
 
 function HuskPlayerMovement:on_death_exit()
@@ -3118,10 +2952,7 @@ function HuskPlayerMovement:_post_load(unit, t, dt)
 		self:set_look_dir_instant(my_data.look_fwd)
 
 		if data.zip_line_unit_id then
-			if not managers.worldcollection or not managers.worldcollection:get_worlddefinition_by_unit_id(data.zip_line_unit_id) then
-				local worlddefinition = managers.worlddefinition
-			end
-
+			local worlddefinition = managers.worldcollection and managers.worldcollection:get_worlddefinition_by_unit_id(data.zip_line_unit_id) or managers.worlddefinition
 			local original_unit_id = worlddefinition:get_original_unit_id(data.zip_line_unit_id)
 
 			self:on_enter_zipline(worlddefinition:get_unit_on_load(original_unit_id, callback(self, self, "on_enter_zipline")))
@@ -3140,12 +2971,7 @@ function HuskPlayerMovement:save(data)
 		character_name = managers.criminals:character_name_by_unit(self._unit),
 		outfit = managers.network:session():peer(peer_id):profile("outfit_string")
 	}
-
-	if self:zipline_unit() then
-		slot3 = self:zipline_unit():editor_id()
-	end
-
-	data.zip_line_unit_id = slot3
+	data.zip_line_unit_id = self:zipline_unit() and self:zipline_unit():editor_id()
 	data.down_time = self._last_down_time
 end
 
@@ -3205,29 +3031,12 @@ end
 
 function HuskPlayerMovement:_apply_attention_setting_modifications(setting)
 	setting.detection = self._unit:base():detection_settings()
-
-	if not self._unit:base():upgrade_value("player", "camouflage_bonus") then
-		local weight_mul = 1
-	end
-
-	if not self._unit:base():upgrade_value("player", "camouflage_multiplier") then
-		slot3 = 1
-	end
-
-	weight_mul = weight_mul * slot3
-
-	if not self._unit:base():upgrade_value("player", "uncover_multiplier") then
-		slot3 = 1
-	end
-
-	weight_mul = weight_mul * slot3
+	local weight_mul = self._unit:base():upgrade_value("player", "camouflage_bonus") or 1
+	weight_mul = weight_mul * (self._unit:base():upgrade_value("player", "camouflage_multiplier") or 1)
+	weight_mul = weight_mul * (self._unit:base():upgrade_value("player", "uncover_multiplier") or 1)
 
 	if weight_mul and weight_mul ~= 1 then
-		if not setting.weight_mul then
-			slot3 = 1
-		end
-
-		setting.weight_mul = slot3 * weight_mul
+		setting.weight_mul = (setting.weight_mul or 1) * weight_mul
 	end
 end
 
@@ -3353,29 +3162,14 @@ end
 function HuskPlayerMovement:_get_max_move_speed(run)
 	local class_tweak_data = self._class_tweak_data
 	local unit_base = self._unit:base()
-
-	if not unit_base:upgrade_value("player", "all_movement_speed_increase") then
-		local global_multiplier = 1
-	end
+	local global_multiplier = unit_base:upgrade_value("player", "all_movement_speed_increase") or 1
 
 	if self._pose_code == 2 then
-		slot5 = class_tweak_data.movement.speed.CROUCHING_SPEED
-
-		if not unit_base:upgrade_value("player", "crouch_speed_increase") then
-			slot6 = 1
-		end
-
-		return slot5 * slot6 * global_multiplier
+		return class_tweak_data.movement.speed.CROUCHING_SPEED * (unit_base:upgrade_value("player", "crouch_speed_increase") or 1) * global_multiplier
 	end
 
 	if run then
-		slot5 = class_tweak_data.movement.speed.RUNNING_SPEED
-
-		if not unit_base:upgrade_value("player", "run_speed_increase") then
-			slot6 = 1
-		end
-
-		return slot5 * slot6 * global_multiplier
+		return class_tweak_data.movement.speed.RUNNING_SPEED * (unit_base:upgrade_value("player", "run_speed_increase") or 1) * global_multiplier
 	end
 
 	return class_tweak_data.movement.speed.WALKING_SPEED * global_multiplier
@@ -3961,33 +3755,16 @@ function HuskPlayerMovement:anim_clbk_close_parachute(unit)
 end
 
 function HuskPlayerMovement:set_foxhole_state(state, unit)
-	if not self._foxhole_state then
-		slot3 = false
-	end
-
-	self._foxhole_state = slot3
+	self._foxhole_state = self._foxhole_state or false
 
 	if self._foxhole_state == state then
 		return
 	end
 
 	self._foxhole_state = state
+	self._foxhole_unit = alive(unit) and unit
 
-	if alive(unit) then
-		slot3 = unit
-	end
-
-	self._foxhole_unit = slot3
-	slot5 = self
-	slot3 = self.play_redirect
-
-	if state then
-		slot6 = "e_so_foxhole_enter"
-	else
-		slot6 = "e_so_foxhole_exit"
-	end
-
-	slot3(slot5, slot6)
+	self:play_redirect(state and "e_so_foxhole_enter" or "e_so_foxhole_exit")
 
 	if state then
 		self._movement_updator = callback(self, self, "_upd_move_downed")

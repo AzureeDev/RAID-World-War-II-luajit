@@ -2383,7 +2383,7 @@ function CoreEditor:draw_occluders(t, dt)
 		for _, unit in ipairs(units) do
 			local unit_pos = unit:position()
 
-			if unit_pos - cam_pos:length() < cam_far_range then
+			if (unit_pos - cam_pos):length() < cam_far_range then
 				local objects = unit:get_objects("oc_*")
 
 				for _, object in ipairs(objects) do
@@ -2613,7 +2613,7 @@ function CoreEditor:update(time, rel_time)
 				Application:draw_sphere(pos, 50, 1, 1, 1)
 				Application:draw_rotation(pos, rot)
 
-				local length = cam_pos - pos:length()
+				local length = (cam_pos - pos):length()
 				local from = Vector3(pos.x, pos.y, pos.z - length / 2)
 				local to = Vector3(pos.x, pos.y, pos.z + length / 2)
 
@@ -2674,7 +2674,7 @@ function CoreEditor:update_ruler(t, dt)
 		return
 	end
 
-	local len = pos - ray.position:length()
+	local len = (pos - ray.position):length()
 
 	Application:draw_sphere(ray.position, 10, 1, 1, 1)
 	Application:draw_line(pos, ray.position, 1, 1, 1)
@@ -2727,7 +2727,7 @@ function CoreEditor:current_orientation(offset_move_vec, unit)
 			if alive(unit) then
 				local u_rot = unit:rotation()
 				local z = n
-				local x = u_rot:x() - z * z:dot(u_rot:x()):normalized()
+				local x = (u_rot:x() - z * z:dot(u_rot:x())):normalized()
 				local y = z:cross(x)
 				local rot = Rotation(x, y, z)
 				current_rot = rot * unit:rotation():inverse()
@@ -2752,9 +2752,9 @@ function CoreEditor:current_orientation(offset_move_vec, unit)
 			end
 
 			for _, o in ipairs(aligns) do
-				local len = o:position() - pos:length()
+				local len = (o:position() - pos):length()
 
-				if len < r and (not closest_snap or len < closest_snap:position() - pos:length()) then
+				if len < r and (not closest_snap or len < (closest_snap:position() - pos):length()) then
 					closest_snap = o
 				end
 
@@ -3079,7 +3079,7 @@ function CoreEditor:_copy_files(src, dest, rules)
 			end
 
 			local to = to .. name .. "." .. type
-			slot14 = SystemFS:copy_file(file.file, to)
+			local success = SystemFS:copy_file(file.file, to)
 		end
 	end
 end
@@ -3958,7 +3958,7 @@ function CoreEditor:load_continents(world_holder, offset)
 	local continents = world_holder:create_world("world", "continents", offset)
 
 	for name, data in pairs(continents) do
-		slot9 = self:create_continent(name, data)
+		local continent = self:create_continent(name, data)
 	end
 
 	self:set_continent("world")

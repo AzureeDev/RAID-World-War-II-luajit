@@ -71,7 +71,7 @@ function NavLinkUnitElement:test_element()
 	if self._hed.test_unit == "default" then
 		local SO_access_strings = managers.navigation:convert_access_filter_to_table(self._hed.SO_access)
 
-		for slot6, slot7 in ipairs(SO_access_strings) do
+		for _, access_category in ipairs(SO_access_strings) do
 		end
 	else
 		spawn_unit_name = self._hed.test_unit

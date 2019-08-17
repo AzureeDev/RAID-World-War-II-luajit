@@ -718,7 +718,7 @@ function HUDManager:add_teammate_panel(character_name, player_name, ai, peer_id)
 				local peer_grenades = managers.player:get_synced_grenades(peer_id)
 
 				if peer_grenades then
-					slot13 = tweak_data.projectiles[peer_grenades.grenade].icon
+					local icon = tweak_data.projectiles[peer_grenades.grenade].icon
 				end
 
 				local peer = managers.network:session():peer(peer_id)

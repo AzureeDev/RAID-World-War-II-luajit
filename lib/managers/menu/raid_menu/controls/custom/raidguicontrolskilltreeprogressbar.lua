@@ -151,7 +151,7 @@ function RaidGUIControlSkilltreeProgressBar:_create_slider_pimples()
 				texture = tweak_data.gui.icons[icon].texture,
 				texture_rect = tweak_data.gui.icons[icon].texture_rect
 			}
-			slot10 = self._slider_pimples_panel:image(level_mark_params)
+			local level_mark = self._slider_pimples_panel:image(level_mark_params)
 		end
 
 		current_level = current_level + 1

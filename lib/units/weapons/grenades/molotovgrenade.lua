@@ -129,7 +129,7 @@ function MolotovGrenade:_do_damage()
 				end
 
 				if Network:is_server() then
-					slot16, slot17 = managers.fire:detect_and_give_dmg({
+					local hit_units, splinters = managers.fire:detect_and_give_dmg({
 						player_damage = 0,
 						push_units = false,
 						hit_pos = effect_position,

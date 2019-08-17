@@ -326,7 +326,7 @@ function VehicleDamage:sync_damage_explosion(attacker_unit, damage_percent, i_at
 
 		self:die(attack_data.variant)
 
-		slot10 = {
+		local data = {
 			variant = "explosion",
 			head_shot = false,
 			name = self._unit:base()._tweak_table,
@@ -460,7 +460,7 @@ function VehicleDamage:sync_damage_fire(attacker_unit, damage_percent, i_attack_
 
 		self:die(attack_data.variant)
 
-		slot10 = {
+		local data = {
 			variant = "fire",
 			head_shot = false,
 			name = self._unit:base()._tweak_table,

@@ -57,7 +57,7 @@ function TankTurretWeapon:singleshot(blanks, expend_ammo, shoot_player, target_p
 	local weapon_tweak_data = self._tweak_data
 	self._fire_locator = self._fire_locator or self._effect_align[self._interleaving_fire]
 	local from_pos = self._fire_obj:position()
-	local direction = target_pos - from_pos:normalized()
+	local direction = (target_pos - from_pos):normalized()
 
 	mvector3.spread(direction, weapon_tweak_data.SPREAD * self._spread_mul)
 
@@ -118,7 +118,7 @@ function TankTurretWeapon:update(unit, t, dt)
 	end
 
 	local new_position = self._tank_shell.position + self._tank_shell.direction * self._tweak_data.main_cannon_shell_speed * dt
-	self._tank_shell.direction = new_position - self._tank_shell.position:normalized()
+	self._tank_shell.direction = (new_position - self._tank_shell.position):normalized()
 	local raycast = World:raycast("ray", self._tank_shell.position, new_position)
 
 	if raycast then

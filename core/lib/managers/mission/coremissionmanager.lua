@@ -81,7 +81,7 @@ function MissionManager:parse(params, stage_name, offset, file_type)
 	continent_files._meta = nil
 
 	for name, data in pairs(continent_files) do
-		if not self._worlddefinition or managers.worlddefinition:continent_excluded(name) then
+		if not (self._worlddefinition or managers.worlddefinition):continent_excluded(name) then
 			self:_load_mission_file(file_dir, data)
 		end
 	end
@@ -360,22 +360,18 @@ function MissionManager:add_fading_debug_output(debug, color, as_subtitle)
 end
 
 function MissionManager:_show_debug_subtitle(debug, color)
-	if not self._debug_subtitle_text then
-		slot3 = self._workspace:panel():text({
-			font_size = 20,
-			name = "debug_fading_subtitle_text",
-			wrap = true,
-			word_wrap = true,
-			align = "center",
-			font = "core/fonts/diesel",
-			halign = "center",
-			valign = "center",
-			text = debug,
-			color = color or Color.white
-		})
-	end
-
-	self._debug_subtitle_text = slot3
+	self._debug_subtitle_text = self._debug_subtitle_text or self._workspace:panel():text({
+		font_size = 20,
+		name = "debug_fading_subtitle_text",
+		wrap = true,
+		word_wrap = true,
+		align = "center",
+		font = "core/fonts/diesel",
+		halign = "center",
+		valign = "center",
+		text = debug,
+		color = color or Color.white
+	})
 
 	self._debug_subtitle_text:set_w(self._workspace:panel():w() / 2)
 	self._debug_subtitle_text:set_text(debug)

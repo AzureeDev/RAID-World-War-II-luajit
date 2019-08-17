@@ -20,19 +20,11 @@ function GrenadePickup:_pickup(unit)
 
 		if not managers.player:got_max_grenades() then
 			if managers.buff_effect:is_effect_active(BuffEffectManager.EFFECT_ENEMY_LOOT_DROP_AMMO_EFFECT_INCREASE) then
-				if not managers.buff_effect:get_effect_value(BuffEffectManager.EFFECT_ENEMY_LOOT_DROP_AMMO_EFFECT_INCREASE) then
-					slot7 = 1
-				end
-
-				effect_ammo_pickup_multiplier = effect_ammo_pickup_multiplier + slot7 - 1
+				effect_ammo_pickup_multiplier = effect_ammo_pickup_multiplier + (managers.buff_effect:get_effect_value(BuffEffectManager.EFFECT_ENEMY_LOOT_DROP_AMMO_EFFECT_INCREASE) or 1) - 1
 			end
 
 			if managers.buff_effect:is_effect_active(BuffEffectManager.EFFECT_ENEMY_LOOT_DROP_REWARD_INCREASE) then
-				if not managers.buff_effect:get_effect_value(BuffEffectManager.EFFECT_ENEMY_LOOT_DROP_REWARD_INCREASE) then
-					slot7 = 1
-				end
-
-				effect_ammo_pickup_multiplier = effect_ammo_pickup_multiplier + slot7 - 1
+				effect_ammo_pickup_multiplier = effect_ammo_pickup_multiplier + (managers.buff_effect:get_effect_value(BuffEffectManager.EFFECT_ENEMY_LOOT_DROP_REWARD_INCREASE) or 1) - 1
 			end
 
 			grenades_to_add = (tweak_data.drop_loot[self.tweak_data].grenades_amount or 1) * effect_ammo_pickup_multiplier

@@ -160,8 +160,8 @@ function HUDHitDirection:update(t, dt)
 		indicator_data.indicator:set_alpha(1 - indicator_data.fade_in_t / HUDHitDirection.INDICATOR_FADE_IN_DURATION - indicator_data.fade_out_t / HUDHitDirection.INDICATOR_FADE_OUT_DURATION)
 
 		local enemy_pos = self._indicators[id].position:with_z(player_pos.z)
-		local angle = enemy_pos - player_pos:normalized():angle(cam_fwd)
-		local cross_prod = enemy_pos - player_pos:normalized():cross(cam_fwd)
+		local angle = (enemy_pos - player_pos):normalized():angle(cam_fwd)
+		local cross_prod = (enemy_pos - player_pos):normalized():cross(cam_fwd)
 		local orientation = cross_prod:dot(math.UP)
 
 		if orientation < 0 then

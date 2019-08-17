@@ -119,7 +119,7 @@ function FragGrenade:_detonate(tag, unit, body, other_unit, other_body, position
 			local collision = World:raycast("ray", unit_position, spawn_position, "slot_mask", managers.slot:get_mask("bullet_impact_targets"))
 
 			if not collision then
-				local direction = spawn_position - unit_position:normalized()
+				local direction = (spawn_position - unit_position):normalized()
 				local cluster = ProjectileBase.throw_projectile(index, spawn_position, direction, managers.network:session():local_peer():id(), nil, self.name_id)
 
 				cluster:base():set_range(self.cluster_range)
