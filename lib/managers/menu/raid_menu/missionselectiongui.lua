@@ -142,9 +142,9 @@ function MissionSelectionGui:_layout_lists()
 					category = BreadcrumbManager.CATEGORY_OPERATIONS
 				}
 			}
-		},
-		tab_width = (self._primary_lists_panel:w() - 2 * list_tabs_params.x) / #list_tabs_params.tabs_params
+		}
 	}
+	list_tabs_params.tab_width = (self._primary_lists_panel:w() - 2 * list_tabs_params.x) / #list_tabs_params.tabs_params
 	self._list_tabs = self._primary_lists_panel:tabs(list_tabs_params)
 	self._current_mission_type = "raids"
 	local raid_list_scrollable_area_params = {

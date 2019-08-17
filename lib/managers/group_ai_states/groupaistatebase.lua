@@ -2944,7 +2944,7 @@ end
 
 function GroupAIStateBase:_determine_objective_for_criminal_AI(unit)
 	local objective, closest_dis, closest_record = nil
-	local ai_pos = self._ai_criminals[unit:key()] or self._police[unit:key()].m_pos
+	local ai_pos = (self._ai_criminals[unit:key()] or self._police[unit:key()]).m_pos
 	local ai_unit = self._ai_criminals[unit:key()] or self._police[unit:key()]
 
 	for pl_key, pl_record in pairs(self._player_criminals) do
@@ -2971,7 +2971,7 @@ function GroupAIStateBase:_determine_objective_for_criminal_AI(unit)
 		player_rot = closest_record.unit:rotation()
 	end
 
-	local ai_pos = self._ai_criminals[unit:key()] or self._police[unit:key()].m_pos
+	local ai_pos = (self._ai_criminals[unit:key()] or self._police[unit:key()]).m_pos
 	local skip_hostage_trade_time_reset = nil
 
 	if not objective and self:is_ai_trade_possible() then
