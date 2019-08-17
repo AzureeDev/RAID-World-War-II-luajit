@@ -275,7 +275,7 @@ function RotationWidget:calculate(unit, widget_rot, widget_pos, widget_screen_po
 	local real_widget_screen_pos = managers.editor:world_to_screen(self._widget:position())
 	real_widget_screen_pos = real_widget_screen_pos:with_z(real_widget_screen_pos.z / 1000)
 	local real_screen_dir = (real_click_screen_pos - real_widget_screen_pos):normalized()
-	local real_widget_axis_pos = managers.editor:world_to_screen(self._widget:position() + widget_rot:self._rotate_widget_axis]() * 100)
+	local real_widget_axis_pos = managers.editor:world_to_screen(self._widget:position() + widget_rot[self._rotate_widget_axis](widget_rot) * 100)
 	real_widget_axis_pos = real_widget_axis_pos:with_z(real_widget_axis_pos.z / 1000)
 	local real_widget_screen_dir = (real_widget_axis_pos - real_widget_screen_pos):normalized()
 	local real_cross_dir = real_screen_dir:cross(real_widget_screen_dir)

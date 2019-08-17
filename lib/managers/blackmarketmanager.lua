@@ -857,29 +857,31 @@ function BlackMarketManager:create_preload_ws()
 	panel:set_layer(tweak_data.gui.DIALOG_LAYER)
 
 	local new_script = {
-		progress = 1,
-		step_progress = function ()
-			new_script.set_progress(new_script.progress + 1)
-		end,
-		set_progress = function (progress)
-			new_script.progress = progress
-			local square_panel = panel:child("square_panel")
-			local progress_rect = panel:child("progress")
+		progress = 1
+	}
 
-			if progress == 0 then
-				progress_rect:hide()
-			end
+	function new_script.step_progress()
+		new_script.set_progress(new_script.progress + 1)
+	end
 
-			for i, child in ipairs(square_panel:children()) do
-				child:set_color(i < progress and Color.white or Color(0.3, 0.3, 0.3))
+	function new_script.set_progress(progress)
+		new_script.progress = progress
+		local square_panel = panel:child("square_panel")
+		local progress_rect = panel:child("progress")
 
-				if i == progress then
-					progress_rect:set_world_center(child:world_center())
-					progress_rect:show()
-				end
+		if progress == 0 then
+			progress_rect:hide()
+		end
+
+		for i, child in ipairs(square_panel:children()) do
+			child:set_color(i < progress and Color.white or Color(0.3, 0.3, 0.3))
+
+			if i == progress then
+				progress_rect:set_world_center(child:world_center())
+				progress_rect:show()
 			end
 		end
-	}
+	end
 
 	panel:set_script(new_script)
 
@@ -1740,10 +1742,10 @@ function BlackMarketManager:get_weapon_ammo_info(weapon_id, extra_ammo, total_am
 	ammo_max_per_clip = math.min(ammo_max_per_clip, ammo_max)
 	local ammo_data = {
 		base = tweak_data.weapon[weapon_id].AMMO_MAX,
-		mod = ammo_from_mods + managers.player:upgrade_value(weapon_id, "clip_amount_increase") * ammo_max_per_clip,
-		skill = (ammo_data.base + ammo_data.mod) * ammo_max_multiplier - ammo_data.base - ammo_data.mod,
-		skill_in_effect = managers.player:has_category_upgrade("player", "extra_ammo_multiplier") or managers.player:has_category_upgrade(weapon_tweak_data.category, "extra_ammo_multiplier") or managers.player:has_category_upgrade("player", "add_armor_stat_skill_ammo_mul")
+		mod = ammo_from_mods + managers.player:upgrade_value(weapon_id, "clip_amount_increase") * ammo_max_per_clip
 	}
+	ammo_data.skill = (ammo_data.base + ammo_data.mod) * ammo_max_multiplier - ammo_data.base - ammo_data.mod
+	ammo_data.skill_in_effect = managers.player:has_category_upgrade("player", "extra_ammo_multiplier") or managers.player:has_category_upgrade(weapon_tweak_data.category, "extra_ammo_multiplier") or managers.player:has_category_upgrade("player", "add_armor_stat_skill_ammo_mul")
 
 	return ammo_max_per_clip, ammo_max, ammo_data
 end

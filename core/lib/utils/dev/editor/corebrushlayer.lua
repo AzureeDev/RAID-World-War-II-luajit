@@ -86,7 +86,7 @@ function BrushLayer:reposition_all()
 			local index = 0
 
 			while index < unit:num_bodies() and not dynamic_unit do
-				if unit:body_by_index( index ):dynamic() then
+				if unit:body_by_index(index):dynamic() then
 					dynamic_unit = true
 				end
 				index = index + 1

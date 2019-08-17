@@ -429,8 +429,8 @@ function InventoryGenerator.create_description_safe(safe_entry)
 	local x_td, y_td, xr_td, yr_td = nil
 
 	local function sort_func(x, y)
-		x_td = tweak_data.economy[x.category] or tweak_data.blackmarket[x.category][x.entry]
-		y_td = tweak_data.economy[y.category] or tweak_data.blackmarket[y.category][y.entry]
+		x_td = (tweak_data.economy[x.category] or tweak_data.blackmarket[x.category])[x.entry]
+		y_td = (tweak_data.economy[y.category] or tweak_data.blackmarket[y.category])[y.entry]
 		xr_td = tweak_data.economy.rarities[x_td.rarity or "common"]
 		yr_td = tweak_data.economy.rarities[y_td.rarity or "common"]
 
@@ -446,7 +446,7 @@ function InventoryGenerator.create_description_safe(safe_entry)
 	local td = nil
 
 	for _, item in ipairs(items_list) do
-		td = tweak_data.economy[item.category] or tweak_data.blackmarket[item.category][item.entry]
+		td = (tweak_data.economy[item.category] or tweak_data.blackmarket[item.category])[item.entry]
 		text = text .. "[color=#" .. InventoryGenerator._create_hex_color(tweak_data.economy.rarities[td.rarity or "common"].color) .. "]"
 		text = item.category == "contents" and td.rarity == "legendary" and text .. managers.localization:text("bm_menu_rarity_legendary_item_long") .. "[/color]" or text .. (td.weapon_id and utf8.to_upper(managers.weapon_factory:get_weapon_name_by_weapon_id(td.weapon_id)) .. " | " or "") .. managers.localization:text(td.name_id)
 
