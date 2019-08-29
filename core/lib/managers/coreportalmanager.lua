@@ -567,7 +567,7 @@ function PortalUnitGroup:remove_unit_id(unit)
 end
 
 function PortalUnitGroup:lock_units()
-	for slot4, slot5 in ipairs(self._units) do
+	for _, unit in ipairs(self._units) do
 	end
 end
 

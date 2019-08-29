@@ -60,7 +60,7 @@ function RaidGUIControlSuggestedCardsLarge:_item_selected_callback(item_idx)
 end
 
 function RaidGUIControlSuggestedCardsLarge:_delete_items()
-	for slot4, slot5 in pairs(self._suggested_cards_panel._controls) do
+	for index, control in pairs(self._suggested_cards_panel._controls) do
 	end
 
 	self._suggested_cards_panel:clear()

@@ -4844,7 +4844,7 @@ function PlayerStandard:call_teammate(line, t, no_gesture, skip_alert, skip_mark
 
 	if voice_type == "come" then
 		interact_type = "cmd_come"
-		local crim_data = managers.criminals:character_static_data_by_unit(prime_target.unit).ssuffix
+		local character_code = managers.criminals:character_static_data_by_unit(prime_target.unit).ssuffix
 	elseif voice_type == "mark_cop" and not skip_mark_cop then
 		local shout_sound = tweak_data.character[prime_target.unit:base()._tweak_table].priority_shout
 
