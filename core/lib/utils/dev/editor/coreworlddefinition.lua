@@ -167,7 +167,7 @@ function WorldDefinition:init(params)
 	self._return_data = nil
 
 	if self.is_streamed_world then
-		for slot5, slot6 in ipairs(self._loaded_packages) do
+		for _, package in ipairs(self._loaded_packages) do
 		end
 
 		if not WorldDefinition.ASYNC_CALLBACKS then
@@ -730,7 +730,7 @@ end
 
 function WorldDefinition:init_done()
 	if self._continent_init_packages then
-		for slot4, slot5 in ipairs(self._continent_init_packages) do
+		for _, package in ipairs(self._continent_init_packages) do
 		end
 	end
 
