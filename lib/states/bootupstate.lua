@@ -281,7 +281,7 @@ function BootupState:play_next(is_skipped)
 		Application:set_file_streamer_settings(4194304, 1)
 	end
 
-	if is_skipped and self._play_data then
+	if is_skipped then
 		while self._play_data and self._play_data.auto_skip do
 			self._play_index = self._play_index + 1
 			self._play_data = self._play_data_list[self._play_index]

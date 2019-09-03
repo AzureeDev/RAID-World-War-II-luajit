@@ -262,7 +262,12 @@ end
 
 function RaidGUIControlGoldBarRewardDetails:set_gold_bar_reward(amount)
 	local text = ""
-	text = (amount ~= 1 or self:translate("menu_loot_screen_gold_bars_single", true)) and (amount or 0) .. " " .. self:translate("menu_loot_screen_gold_bars", true)
+
+	if amount == 1 then
+		text = self:translate("menu_loot_screen_gold_bars_single", true)
+	else
+		text = (amount or 0) .. " " .. self:translate("menu_loot_screen_gold_bars", true)
+	end
 
 	self._gold_bar_value:set_text(text)
 	self:_layout_gold_bar_value()

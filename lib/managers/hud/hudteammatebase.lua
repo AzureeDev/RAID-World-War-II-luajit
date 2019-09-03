@@ -249,19 +249,17 @@ function HUDTeammateBase:stop_timer()
 end
 
 function HUDTeammateBase:_animate_timer_countdown()
-	if self._timer_current > 0 and self._timer_total then
-		while self._timer_current > 0 and self._timer_total and self._timer_total > 0 do
-			local dt = coroutine.yield()
+	while self._timer_current > 0 and self._timer_total and self._timer_total > 0 do
+		local dt = coroutine.yield()
 
-			if self._is_timer_running and self._timer_total and self._timer_total > 0 then
-				self._timer_current = self._timer_current - dt
+		if self._is_timer_running and self._timer_total and self._timer_total > 0 then
+			self._timer_current = self._timer_current - dt
 
-				self._timer_bar:set_position_z(self._timer_current / self._timer_total)
+			self._timer_bar:set_position_z(self._timer_current / self._timer_total)
 
-				local time_text = math.round(self._timer_current) < 10 and "0" .. math.round(self._timer_current) or math.round(self._timer_current)
+			local time_text = math.round(self._timer_current) < 10 and "0" .. math.round(self._timer_current) or math.round(self._timer_current)
 
-				self._timer_text:set_text(time_text)
-			end
+			self._timer_text:set_text(time_text)
 		end
 	end
 end

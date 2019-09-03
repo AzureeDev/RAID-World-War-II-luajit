@@ -140,9 +140,6 @@ function DialogManager:_create_dialogue_instance(id, instigator, test)
 	if nr_criminals > 2 then
 		charC = char_names[self:_random_criminal(nr_criminals)]
 
-		if charC ~= charA then
-		end
-
 		while charC == charA or charC == charB do
 			charC = char_names[self:_random_criminal(nr_criminals)]
 		end

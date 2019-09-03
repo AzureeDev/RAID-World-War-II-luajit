@@ -339,30 +339,28 @@ function ProgressionManager:_offer_new_missions()
 		end
 	end
 
-	if missions_to_make_available > 0 then
-		while missions_to_make_available > 0 and have_locked_missions do
-			have_locked_missions = false
+	while missions_to_make_available > 0 and have_locked_missions do
+		have_locked_missions = false
 
-			for _, mission_type in pairs(tweak_data.operations.progression.regular_mission_unlock_blueprint) do
-				if locked_missions[mission_type] and #locked_missions[mission_type] > 0 then
-					math.shuffle(locked_missions[mission_type])
+		for _, mission_type in pairs(tweak_data.operations.progression.regular_mission_unlock_blueprint) do
+			if locked_missions[mission_type] and #locked_missions[mission_type] > 0 then
+				math.shuffle(locked_missions[mission_type])
 
-					local mission_unlocked = table.remove(locked_missions[mission_type])
+				local mission_unlocked = table.remove(locked_missions[mission_type])
 
-					self:_offer_mission(mission_unlocked)
+				self:_offer_mission(mission_unlocked)
 
-					missions_to_make_available = missions_to_make_available - 1
-				end
+				missions_to_make_available = missions_to_make_available - 1
 			end
+		end
 
-			for mission_type, locked_missions_of_type in pairs(locked_missions) do
-				if #locked_missions_of_type > 0 then
-					have_locked_missions = true
+		for mission_type, locked_missions_of_type in pairs(locked_missions) do
+			if #locked_missions_of_type > 0 then
+				have_locked_missions = true
 
-					break
-				else
-					locked_missions[mission_type] = nil
-				end
+				break
+			else
+				locked_missions[mission_type] = nil
 			end
 		end
 	end

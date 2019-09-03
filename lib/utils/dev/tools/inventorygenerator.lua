@@ -448,7 +448,12 @@ function InventoryGenerator.create_description_safe(safe_entry)
 	for _, item in ipairs(items_list) do
 		td = (tweak_data.economy[item.category] or tweak_data.blackmarket[item.category])[item.entry]
 		text = text .. "[color=#" .. InventoryGenerator._create_hex_color(tweak_data.economy.rarities[td.rarity or "common"].color) .. "]"
-		text = item.category == "contents" and td.rarity == "legendary" and text .. managers.localization:text("bm_menu_rarity_legendary_item_long") .. "[/color]" or text .. (td.weapon_id and utf8.to_upper(managers.weapon_factory:get_weapon_name_by_weapon_id(td.weapon_id)) .. " | " or "") .. managers.localization:text(td.name_id)
+
+		if item.category == "contents" and td.rarity == "legendary" then
+			text = text .. managers.localization:text("bm_menu_rarity_legendary_item_long") .. "[/color]"
+		else
+			text = text .. (td.weapon_id and utf8.to_upper(managers.weapon_factory:get_weapon_name_by_weapon_id(td.weapon_id)) .. " | " or "") .. managers.localization:text(td.name_id)
+		end
 
 		if _ ~= #items_list then
 			text = text .. "[/color]\\n"
@@ -697,46 +702,44 @@ function InventoryGenerator._json_entry(data_string)
 	local i2 = 1
 	local data = {}
 
-	if i2 then
-		while i2 and i2 < #data_string do
-			i1 = data_string:find("\"", i2)
-			i2 = data_string:find("\"", i1 and i1 + 1)
+	while i2 and i2 < #data_string do
+		i1 = data_string:find("\"", i2)
+		i2 = data_string:find("\"", i1 and i1 + 1)
 
-			if not i1 or not i2 then
-				break
-			end
-
-			key = data_string:sub(i1 + 1, i2 - 1)
-			i1 = data_string:find(":", i2)
-
-			if not i1 then
-				break
-			end
-
-			i2 = i1 + 1
-			local first_char = data_string:match("^%s*(.+)", i2):sub(1, 1)
-
-			if first_char == "[" then
-				temp, i2 = InventoryGenerator._json_find_section(data_string, "%[", "%]", i1)
-			elseif first_char == "{" then
-				temp, i2 = InventoryGenerator._json_find_section(data_string, "{", "}", i1)
-			end
-
-			local pos = i2
-			i2 = data_string:find(",", pos)
-
-			if i2 then
-				local str_pos = data_string:find("\"", pos)
-
-				if str_pos and str_pos < i2 then
-					str_pos = data_string:find("\"", str_pos + 1)
-					local t = i2
-					i2 = data_string:find(",", str_pos)
-				end
-			end
-
-			data[key] = InventoryGenerator._json_value(data_string:sub(i1 + 1, i2 and i2 - 1))
+		if not i1 or not i2 then
+			break
 		end
+
+		key = data_string:sub(i1 + 1, i2 - 1)
+		i1 = data_string:find(":", i2)
+
+		if not i1 then
+			break
+		end
+
+		i2 = i1 + 1
+		local first_char = data_string:match("^%s*(.+)", i2):sub(1, 1)
+
+		if first_char == "[" then
+			temp, i2 = InventoryGenerator._json_find_section(data_string, "%[", "%]", i1)
+		elseif first_char == "{" then
+			temp, i2 = InventoryGenerator._json_find_section(data_string, "{", "}", i1)
+		end
+
+		local pos = i2
+		i2 = data_string:find(",", pos)
+
+		if i2 then
+			local str_pos = data_string:find("\"", pos)
+
+			if str_pos and str_pos < i2 then
+				str_pos = data_string:find("\"", str_pos + 1)
+				local t = i2
+				i2 = data_string:find(",", str_pos)
+			end
+		end
+
+		data[key] = InventoryGenerator._json_value(data_string:sub(i1 + 1, i2 and i2 - 1))
 	end
 
 	return data
@@ -784,16 +787,14 @@ function InventoryGenerator._json_value_list(data_string)
 	local start = 1
 	local stop = 1
 
-	if stop then
-		while stop and stop < #data_string do
-			start, stop = InventoryGenerator._json_find_section(data_string, "{", "}", stop)
+	while stop and stop < #data_string do
+		start, stop = InventoryGenerator._json_find_section(data_string, "{", "}", stop)
 
-			if not start then
-				break
-			end
-
-			table.insert(data, InventoryGenerator._json_entry(data_string:sub(start + 1, stop and stop - 1)))
+		if not start then
+			break
 		end
+
+		table.insert(data, InventoryGenerator._json_entry(data_string:sub(start + 1, stop and stop - 1)))
 	end
 
 	return data

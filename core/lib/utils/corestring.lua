@@ -94,7 +94,7 @@ function string:rep(n)
 end
 
 function string:left(n)
-	return self .. " ":rep(n - self:len())
+	return self .. (" "):rep(n - self:len())
 end
 
 function string.add_decimal_marks_to_string(str)
