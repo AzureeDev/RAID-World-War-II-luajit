@@ -763,16 +763,14 @@ function NavigationManager:_draw_doors(progress)
 	local i_door = data.next_draw_i_door
 	local wanted_index = math.clamp(math.ceil(nr_doors * progress), 1, nr_doors)
 
-	if i_door <= wanted_index then
-		while i_door <= wanted_index and i_door <= nr_doors do
-			local door = doors[i_door]
+	while i_door <= wanted_index and i_door <= nr_doors do
+		local door = doors[i_door]
 
-			if not room_mask or room_mask[door.rooms[1]] or room_mask[door.rooms[2]] then
-				self:_draw_door(door)
-			end
-
-			i_door = i_door + 1
+		if not room_mask or room_mask[door.rooms[1]] or room_mask[door.rooms[2]] then
+			self:_draw_door(door)
 		end
+
+		i_door = i_door + 1
 	end
 
 	if progress == 1 then
@@ -1485,10 +1483,8 @@ function NavigationManager:_execute_coarce_search(search_data)
 				local new_seg_weight = seg_data.weight
 				local search_index = #to_search
 
-				if search_index > 0 then
-					while search_index > 0 and to_search[search_index].weight < new_seg_weight do
-						search_index = search_index - 1
-					end
+				while search_index > 0 and to_search[search_index].weight < new_seg_weight do
+					search_index = search_index - 1
 				end
 
 				table.insert(to_search, search_index + 1, seg_data)

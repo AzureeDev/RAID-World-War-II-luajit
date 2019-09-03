@@ -456,7 +456,12 @@ function GreedLootScreenGui:_add_gold_bar()
 	self._gold_icon:animate(callback(self, self, "_animate_pulse"))
 
 	local text = ""
-	text = (self._gold_bars_added ~= 1 or self:translate("menu_loot_screen_gold_bars_single", true)) and (self._gold_bars_added or 0) .. " " .. self:translate("menu_loot_screen_gold_bars", true)
+
+	if self._gold_bars_added == 1 then
+		text = self:translate("menu_loot_screen_gold_bars_single", true)
+	else
+		text = (self._gold_bars_added or 0) .. " " .. self:translate("menu_loot_screen_gold_bars", true)
+	end
 
 	self._gold_bar_value:set_text(text)
 	self:_layout_gold_bar_value_text()

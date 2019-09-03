@@ -1322,35 +1322,33 @@ function GroupAIStateBesiege:_spawn_in_group(spawn_group, group_nationality, spa
 		end
 	end
 
-	if wanted_nr_units > 0 then
-		while wanted_nr_units > 0 and #valid_unit_types ~= 0 do
-			local rand_wght = math.random() * total_wgt
-			local rand_i = 1
-			local rand_entry = nil
+	while wanted_nr_units > 0 and #valid_unit_types ~= 0 do
+		local rand_wght = math.random() * total_wgt
+		local rand_i = 1
+		local rand_entry = nil
 
-			while true do
-				rand_entry = valid_unit_types[rand_i]
-				rand_wght = rand_wght - rand_entry.freq
+		while true do
+			rand_entry = valid_unit_types[rand_i]
+			rand_wght = rand_wght - rand_entry.freq
 
-				if rand_wght <= 0 then
-					break
-				else
-					rand_i = rand_i + 1
-				end
-
-				if true then
-				end
-			end
-
-			local cat_data = unit_categories[rand_entry.unit]
-
-			if cat_data.special_type and tweak_data.group_ai.special_unit_spawn_limits[cat_data.special_type] and tweak_data.group_ai.special_unit_spawn_limits[cat_data.special_type] <= self:_get_special_unit_type_count(cat_data.special_type) then
-				table.remove(valid_unit_types, rand_i)
-
-				total_wgt = total_wgt - rand_entry.freq
+			if rand_wght <= 0 then
+				break
 			else
-				_add_unit_type_to_spawn_task(rand_i, rand_entry)
+				rand_i = rand_i + 1
 			end
+
+			if true then
+			end
+		end
+
+		local cat_data = unit_categories[rand_entry.unit]
+
+		if cat_data.special_type and tweak_data.group_ai.special_unit_spawn_limits[cat_data.special_type] and tweak_data.group_ai.special_unit_spawn_limits[cat_data.special_type] <= self:_get_special_unit_type_count(cat_data.special_type) then
+			table.remove(valid_unit_types, rand_i)
+
+			total_wgt = total_wgt - rand_entry.freq
+		else
+			_add_unit_type_to_spawn_task(rand_i, rand_entry)
 		end
 	end
 

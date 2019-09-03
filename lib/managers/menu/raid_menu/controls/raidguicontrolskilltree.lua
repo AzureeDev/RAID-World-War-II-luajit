@@ -38,26 +38,24 @@ function RaidGUIControlSkilltree:on_respec()
 	local current_level_index = 2
 	local need_to_check_further = true
 
-	if need_to_check_further then
-		while need_to_check_further and current_level_index <= #self._levels do
-			local current_level = self._levels[current_level_index]
+	while need_to_check_further and current_level_index <= #self._levels do
+		local current_level = self._levels[current_level_index]
 
-			for j = 1, #current_level.nodes, 1 do
-				local node = current_level.nodes[j]
+		for j = 1, #current_level.nodes, 1 do
+			local node = current_level.nodes[j]
 
-				if node:state() == RaidGUIControlBranchingBarNode.STATE_INACTIVE then
-					need_to_check_further = false
-				elseif node:state() == RaidGUIControlBranchingBarNode.STATE_ACTIVE then
-					node:set_selected()
+			if node:state() == RaidGUIControlBranchingBarNode.STATE_INACTIVE then
+				need_to_check_further = false
+			elseif node:state() == RaidGUIControlBranchingBarNode.STATE_ACTIVE then
+				node:set_selected()
 
-					self._selected_nodes[node._data.level] = node._data
-				else
-					current_level.nodes[j]:set_pending()
-				end
+				self._selected_nodes[node._data.level] = node._data
+			else
+				current_level.nodes[j]:set_pending()
 			end
-
-			current_level_index = current_level_index + 1
 		end
+
+		current_level_index = current_level_index + 1
 	end
 
 	self:_refresh_tree(true)

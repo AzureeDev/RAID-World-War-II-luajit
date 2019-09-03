@@ -334,56 +334,54 @@ function RaidGUIControlBranchingProgressBar:_refresh_tree(full_refresh)
 	local need_to_check_further = true
 	local level_progress = nil
 
-	if need_to_check_further or full_refresh then
-		while (need_to_check_further or full_refresh) and current_level_index <= #self._levels do
-			local current_level = self._levels[current_level_index]
-			need_to_check_further = false
-			level_progress = self:_get_level_progress(current_level_index)
+	while (need_to_check_further or full_refresh) and current_level_index <= #self._levels do
+		local current_level = self._levels[current_level_index]
+		need_to_check_further = false
+		level_progress = self:_get_level_progress(current_level_index)
 
-			for j = 1, #current_level.nodes, 1 do
-				local is_reachable = self:_check_if_node_reachable(current_level.nodes[j])
-				local is_blocked = self:_check_if_node_blocked(current_level.nodes[j])
-				local node_state = current_level.nodes[j]:state()
+		for j = 1, #current_level.nodes, 1 do
+			local is_reachable = self:_check_if_node_reachable(current_level.nodes[j])
+			local is_blocked = self:_check_if_node_blocked(current_level.nodes[j])
+			local node_state = current_level.nodes[j]:state()
 
-				if level_progress == 1 and node_state == RaidGUIControlBranchingBarNode.STATE_INACTIVE and is_reachable then
-					if self._activate_automatically then
-						current_level.nodes[j]:set_active()
-					else
-						if not self._first_available_level then
-							self._first_available_level = current_level_index
-						end
-
-						current_level.nodes[j]:set_pending()
+			if level_progress == 1 and node_state == RaidGUIControlBranchingBarNode.STATE_INACTIVE and is_reachable then
+				if self._activate_automatically then
+					current_level.nodes[j]:set_active()
+				else
+					if not self._first_available_level then
+						self._first_available_level = current_level_index
 					end
 
-					need_to_check_further = true
-				elseif node_state == RaidGUIControlBranchingBarNode.STATE_PENDING_BLOCKED and is_reachable and not is_blocked then
 					current_level.nodes[j]:set_pending()
-				elseif node_state == RaidGUIControlBranchingBarNode.STATE_ACTIVE then
-					for k = 1, #current_level.nodes, 1 do
-						if k ~= j then
-							current_level.nodes[k]:set_disabled()
-						end
+				end
+
+				need_to_check_further = true
+			elseif node_state == RaidGUIControlBranchingBarNode.STATE_PENDING_BLOCKED and is_reachable and not is_blocked then
+				current_level.nodes[j]:set_pending()
+			elseif node_state == RaidGUIControlBranchingBarNode.STATE_ACTIVE then
+				for k = 1, #current_level.nodes, 1 do
+					if k ~= j then
+						current_level.nodes[k]:set_disabled()
 					end
-
-					need_to_check_further = true
-					current_level.active = true
-					current_level.active_node_index = j
-				elseif not is_reachable then
-					current_level.nodes[j]:set_disabled()
-
-					need_to_check_further = true
 				end
 
-				if level_progress == 1 then
-					need_to_check_further = true
-				end
+				need_to_check_further = true
+				current_level.active = true
+				current_level.active_node_index = j
+			elseif not is_reachable then
+				current_level.nodes[j]:set_disabled()
+
+				need_to_check_further = true
 			end
 
-			self:_refresh_level_paths(current_level_index)
-
-			current_level_index = current_level_index + 1
+			if level_progress == 1 then
+				need_to_check_further = true
+			end
 		end
+
+		self:_refresh_level_paths(current_level_index)
+
+		current_level_index = current_level_index + 1
 	end
 end
 
@@ -627,24 +625,22 @@ function RaidGUIControlBranchingProgressBar:clear_selection()
 	local current_level_index = 2
 	local need_to_check_further = true
 
-	if need_to_check_further then
-		while need_to_check_further and current_level_index <= #self._levels do
-			local current_level = self._levels[current_level_index]
+	while need_to_check_further and current_level_index <= #self._levels do
+		local current_level = self._levels[current_level_index]
 
-			for j = 1, #current_level.nodes, 1 do
-				local node = current_level.nodes[j]
+		for j = 1, #current_level.nodes, 1 do
+			local node = current_level.nodes[j]
 
-				if node:state() == RaidGUIControlBranchingBarNode.STATE_INACTIVE then
-					need_to_check_further = false
-				elseif node:state() == RaidGUIControlBranchingBarNode.STATE_SELECTED then
-					node:set_pending()
-				elseif node:state() == RaidGUIControlBranchingBarNode.STATE_ACTIVE then
-					self._first_available_level = current_level_index + 1
-				end
+			if node:state() == RaidGUIControlBranchingBarNode.STATE_INACTIVE then
+				need_to_check_further = false
+			elseif node:state() == RaidGUIControlBranchingBarNode.STATE_SELECTED then
+				node:set_pending()
+			elseif node:state() == RaidGUIControlBranchingBarNode.STATE_ACTIVE then
+				self._first_available_level = current_level_index + 1
 			end
-
-			current_level_index = current_level_index + 1
 		end
+
+		current_level_index = current_level_index + 1
 	end
 
 	self:_refresh_tree(true)

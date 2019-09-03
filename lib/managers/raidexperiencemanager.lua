@@ -393,13 +393,11 @@ function RaidExperienceManager:get_levels_gained_from_xp(xp)
 	local plvl = managers.experience:current_level() + 1
 	local level_data = nil
 
-	if xp > 0 then
-		while xp > 0 and plvl < self._total_levels do
-			plvl = plvl + 1
-			xp_needed_to_level = tweak_data:get_value("experience_manager", "levels", plvl, "points")
-			level_gained = level_gained + math.min(xp / xp_needed_to_level, 1)
-			xp = math.max(xp - xp_needed_to_level, 0)
-		end
+	while xp > 0 and plvl < self._total_levels do
+		plvl = plvl + 1
+		xp_needed_to_level = tweak_data:get_value("experience_manager", "levels", plvl, "points")
+		level_gained = level_gained + math.min(xp / xp_needed_to_level, 1)
+		xp = math.max(xp - xp_needed_to_level, 0)
 	end
 
 	return level_gained

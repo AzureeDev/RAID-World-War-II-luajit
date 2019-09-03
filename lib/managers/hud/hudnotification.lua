@@ -1354,7 +1354,13 @@ function HUDNotificationActiveDuty:_create_description(amount, consecutive, tota
 	local text = ""
 	text = utf8.to_upper(managers.localization:text("hud_active_duty_bonus"))
 	text = text .. " (" .. consecutive .. "/" .. total .. "): "
-	text = amount == 1 and text .. utf8.to_upper(managers.localization:text("menu_loot_screen_gold_bars_single")) or text .. (amount or 0) .. " " .. utf8.to_upper(managers.localization:text("menu_loot_screen_gold_bars"))
+
+	if amount == 1 then
+		text = text .. utf8.to_upper(managers.localization:text("menu_loot_screen_gold_bars_single"))
+	else
+		text = text .. (amount or 0) .. " " .. utf8.to_upper(managers.localization:text("menu_loot_screen_gold_bars"))
+	end
+
 	local description_params = {
 		vertical = "center",
 		name = "notification_raid_unlocked_description",

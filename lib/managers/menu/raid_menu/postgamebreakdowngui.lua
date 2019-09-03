@@ -361,11 +361,9 @@ function PostGameBreakdownGui:_get_level_by_xp(xp)
 	local points_needed = self._levels_by_xp[1]
 	local level = 0
 
-	if level_cap > level then
-		while level_cap > level and points_needed < xp do
-			level = level + 1
-			points_needed = self._levels_by_xp[level + 1]
-		end
+	while level_cap > level and points_needed < xp do
+		level = level + 1
+		points_needed = self._levels_by_xp[level + 1]
 	end
 
 	return level

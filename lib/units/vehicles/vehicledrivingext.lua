@@ -1219,14 +1219,12 @@ function VehicleDrivingExt:get_next_seat(player)
 	local seat = self:find_seat_for_player(player)
 	local next_seat = self._seats[seat.next_seat]
 
-	if next_seat then
-		while next_seat and next_seat ~= seat do
-			if not next_seat.occupant or next_seat.occupant and next_seat.occupant:brain() then
-				return next_seat
-			end
-
-			next_seat = self._seats[next_seat.next_seat]
+	while next_seat and next_seat ~= seat do
+		if not next_seat.occupant or next_seat.occupant and next_seat.occupant:brain() then
+			return next_seat
 		end
+
+		next_seat = self._seats[next_seat.next_seat]
 	end
 
 	return nil
