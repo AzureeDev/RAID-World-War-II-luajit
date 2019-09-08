@@ -60,9 +60,7 @@ function GameStateMachine:change_state(state, params)
 
 	Application:info("[GameStateMachine][change_state] Requested state change ", transition_debug_string)
 
-	if not self:can_change_state(state) then
-		-- Nothing
-	else
+	if self:can_change_state(state) then
 		self._queued_transitions = self._queued_transitions or {}
 
 		table.insert(self._queued_transitions, {

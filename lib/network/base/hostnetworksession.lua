@@ -813,9 +813,7 @@ function HostNetworkSession:set_dropin_pause_request(peer, dropin_peer_id, state
 		peer:send_after_load("request_drop_in_pause", dropin_peer_id, dropin_peer:name() or "unknown_peer", true)
 	elseif state == "paused" then
 		peer:set_expecting_drop_in_pause_confirmation(dropin_peer_id, state)
-	elseif not state then
-		-- Nothing
-	else
+	elseif state then
 		debug_pause("[HostNetworkSession:set_dropin_pause_request] unknown state", state)
 	end
 end

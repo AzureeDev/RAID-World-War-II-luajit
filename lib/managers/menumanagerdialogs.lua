@@ -2458,9 +2458,7 @@ function MenuManager:show_challenge_reward(reward)
 		texture_path = "guis/textures/pd2/blackmarket/cash_drop"
 	elseif category == "xp" then
 		texture_path = "guis/textures/pd2/blackmarket/xp_drop"
-	elseif category == "colors" then
-		-- Nothing
-	else
+	elseif category ~= "colors" then
 		texture_path = guis_catalog .. "textures/pd2/blackmarket/icons/" .. (category == "weapon_mods" and "mods" or category) .. "/" .. id
 	end
 

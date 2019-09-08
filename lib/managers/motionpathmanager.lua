@@ -420,9 +420,7 @@ function MotionPathManager:update(t, dt)
 				local unit = self:_get_unit(unit_and_pos.unit)
 
 				if alive(unit) then
-					if unit:unit_data().player_seen and unit:unit_data().player_seen > 0 then
-						-- Nothing
-					else
+					if not unit:unit_data().player_seen or unit:unit_data().player_seen <= 0 then
 						self:_move_unit(t, dt, path, unit, unit_and_pos, default_distance_threshold)
 					end
 				end

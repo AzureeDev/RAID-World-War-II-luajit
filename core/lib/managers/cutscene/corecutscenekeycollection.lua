@@ -32,9 +32,7 @@ function CoreCutsceneKeyCollection:keys_between(start_time, end_time, element_na
 				end
 			end
 		end
-		return
-	end
-
+	else
 	local index = table.getn(keys) + 1
 
 	return function ()
@@ -49,6 +47,7 @@ function CoreCutsceneKeyCollection:keys_between(start_time, end_time, element_na
 					end
 				else
 					break
+					end
 				end
 			end
 		end
@@ -89,7 +88,7 @@ function CoreCutsceneKeyCollection:last_key_before(time, element_name, propertie
 
 	for _, key in ipairs(self:_all_keys_sorted_by_time()) do
 		if time <= key:time() then
-			return last_key
+			break
 		end
 
 		if (element_name == nil or element_name == key.ELEMENT_NAME) and (properties == nil or table.true_for_all(properties, function (value, attribute_name)
@@ -98,4 +97,6 @@ function CoreCutsceneKeyCollection:last_key_before(time, element_name, propertie
 			last_key = key
 		end
 	end
+
+	return last_key
 end

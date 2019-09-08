@@ -553,12 +553,7 @@ function RaycastWeaponBase:_fire_raycast(user_unit, from_pos, direction, dmg_mul
 			hit_unit = self._bullet_class:on_collision(col_ray, self._unit, user_unit, damage)
 		elseif autoaim then
 			local autohit_chance = 1
-
-			if tweak_data.weapon[self._name_id].category == WeaponTweakData.WEAPON_CATEGORY_SNP then
-				autohit_chance = 1
-			else
-				autohit_chance = 1 - math.clamp((self._autohit_current - self._autohit_data.MIN_RATIO) / (self._autohit_data.MAX_RATIO - self._autohit_data.MIN_RATIO), 0, 1)
-			end
+			autohit_chance = tweak_data.weapon[self._name_id].category == WeaponTweakData.WEAPON_CATEGORY_SNP and 1 or 1 - math.clamp((self._autohit_current - self._autohit_data.MIN_RATIO) / (self._autohit_data.MAX_RATIO - self._autohit_data.MIN_RATIO), 0, 1)
 
 			if autohit_mul then
 				autohit_chance = autohit_chance * autohit_mul
@@ -1758,9 +1753,7 @@ function InstantExplosiveBulletBase:on_collision(col_ray, weapon_unit, user_unit
 		self:play_impact_sound_and_effects(col_ray)
 	end
 
-	if blank then
-		-- Nothing
-	else
+	if not blank then
 		mvec3_set(tmp_vec1, col_ray.position)
 		mvec3_set(tmp_vec2, col_ray.ray)
 		mvec3_norm(tmp_vec2)

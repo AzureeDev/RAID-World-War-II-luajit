@@ -1052,9 +1052,6 @@ function GroupAIStateBesiege:_find_spawn_group_near_area(target_area, allowed_gr
 
 							table.insert(valid_spawn_groups, spawn_group)
 							table.insert(valid_spawn_group_distances, my_dis)
-
-							if "ljd_decompile_error_something_goes_here_fadklsdfajsdlkjf" then
-							end
 						end
 					end
 				end
@@ -1327,7 +1324,7 @@ function GroupAIStateBesiege:_spawn_in_group(spawn_group, group_nationality, spa
 		local rand_i = 1
 		local rand_entry = nil
 
-		while true do
+		repeat
 			rand_entry = valid_unit_types[rand_i]
 			rand_wght = rand_wght - rand_entry.freq
 
@@ -1336,10 +1333,7 @@ function GroupAIStateBesiege:_spawn_in_group(spawn_group, group_nationality, spa
 			else
 				rand_i = rand_i + 1
 			end
-
-			if true then
-			end
-		end
+		until false
 
 		local cat_data = unit_categories[rand_entry.unit]
 

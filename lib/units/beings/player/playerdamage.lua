@@ -1234,9 +1234,7 @@ function PlayerDamage:_check_bleed_out(can_activate_berserker, ignore_movement_s
 			if managers.player:has_category_upgrade("temporary", "pistol_revive_from_bleed_out") then
 				local upgrade_value = managers.player:upgrade_value("temporary", "pistol_revive_from_bleed_out")
 
-				if upgrade_value == 0 then
-					-- Nothing
-				else
+				if upgrade_value ~= 0 then
 					local time = upgrade_value[2]
 
 					managers.player:activate_temporary_upgrade("temporary", "pistol_revive_from_bleed_out")

@@ -548,9 +548,7 @@ function CopActionHurt:init(action_desc, common_data)
 			return
 		end
 
-		if action_desc.variant == "bleeding" then
-			-- Nothing
-		else
+		if action_desc.variant ~= "bleeding" then
 			local nr_variants = self._ext_anim.base_nr_variants
 
 			if nr_variants then
@@ -575,12 +573,7 @@ function CopActionHurt:init(action_desc, common_data)
 				self._machine:set_parameter(redir_res, dir_str, 1)
 
 				local hit_z = action_desc.hit_pos.z
-
-				if self._ext_movement:m_com().z < hit_z then
-					height = "high"
-				else
-					height = "low"
-				end
+				height = self._ext_movement:m_com().z < hit_z and "high" or "low"
 
 				if action_type == "death" then
 					local death_type = is_civilian and "normal" or action_desc.death_type

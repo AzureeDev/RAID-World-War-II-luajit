@@ -234,9 +234,7 @@ function ChallengeCardsGui:_layout()
 	self._phase_one_panel:show()
 	self._phase_two_panel:hide()
 
-	if Network:is_server() then
-		-- Nothing
-	else
+	if not Network:is_server() then
 		local host_name = managers.network:session():all_peers()[1]:name()
 		self._host_ph2_message = self._phase_two_panel:label({
 			name = "client_waiting_message",

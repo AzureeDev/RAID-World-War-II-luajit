@@ -635,16 +635,7 @@ function HuskPlayerMovement:play_redirect(redirect_name, at_time)
 	end
 
 	local result = self._unit:play_redirect(Idstring(redirect_name), at_time)
-
-	if result ~= Idstring("") then
-		-- Nothing
-	else
-		result = false
-
-		if false then
-			result = true
-		end
-	end
+	result = result ~= Idstring("") and result
 
 	if result then
 		return result
@@ -656,16 +647,7 @@ end
 
 function HuskPlayerMovement:play_redirect_idstr(redirect_name, at_time)
 	local result = self._unit:play_redirect(redirect_name, at_time)
-
-	if result ~= Idstring("") then
-		-- Nothing
-	else
-		result = false
-
-		if false then
-			result = true
-		end
-	end
+	result = result ~= Idstring("") and result
 
 	if result then
 		return result
@@ -677,16 +659,7 @@ end
 
 function HuskPlayerMovement:play_state(state_name, at_time)
 	local result = self._unit:play_state(Idstring(state_name), at_time)
-
-	if result ~= Idstring("") then
-		-- Nothing
-	else
-		result = false
-
-		if false then
-			result = true
-		end
-	end
+	result = result ~= Idstring("") and result
 
 	if result then
 		return result
@@ -698,16 +671,7 @@ end
 
 function HuskPlayerMovement:play_state_idstr(state_name, at_time)
 	local result = self._unit:play_state(state_name, at_time)
-
-	if result ~= Idstring("") then
-		-- Nothing
-	else
-		result = false
-
-		if false then
-			result = true
-		end
-	end
+	result = result ~= Idstring("") and result
 
 	if result then
 		return result

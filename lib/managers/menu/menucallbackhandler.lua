@@ -2078,9 +2078,7 @@ function MenuCallbackHandler:continue_to_lobby()
 end
 
 function MenuCallbackHandler:on_view_character_focus(node, in_focus, data)
-	if in_focus and data then
-		-- Nothing
-	else
+	if not in_focus or not data then
 		managers.menu_component:close_view_character_profile_gui()
 	end
 end

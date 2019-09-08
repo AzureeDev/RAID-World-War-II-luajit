@@ -377,9 +377,7 @@ function BarrageManager:_prepare_barrage_params(barrage_params)
 		prepared_params.ortho_x = prepared_params.direction:random_orthogonal():normalized()
 		prepared_params.ortho_y = math.cross(prepared_params.direction, prepared_params.ortho_x):normalized()
 		prepared_params.radius = managers.groupai:get_difficulty_dependent_value(prepared_params.area_radius)
-	elseif prepared_params.type == BarrageType.AIRPLANE then
-		-- Nothing
-	else
+	elseif prepared_params.type ~= BarrageType.AIRPLANE then
 		Application:error("[BarrageManager] Invalid barrage type (not artillery nor aircraft)")
 	end
 

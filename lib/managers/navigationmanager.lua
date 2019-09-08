@@ -1854,7 +1854,7 @@ function NavigationManager:reserve_pos(start_t, duration, pos, step_clbk, radius
 	local search_pos = entry.position
 	local found_pos = nil
 
-	while true do
+	repeat
 		if free_chk_func(quad_field, entry) then
 			self:add_pos_reservation(entry)
 
@@ -1862,10 +1862,7 @@ function NavigationManager:reserve_pos(start_t, duration, pos, step_clbk, radius
 		elseif not step_clbk or not step_clbk(search_pos) then
 			return
 		end
-
-		if true then
-		end
-	end
+	until false
 end
 
 function NavigationManager:is_pos_free(desc)
@@ -2273,9 +2270,7 @@ function NavigationManager:_remove_obstacles_for_world(world_id)
 
 	for i, obs_data in ipairs(self._obstacles) do
 		if obs_data.world_id == world_id then
-			if not alive(obs_data.unit) then
-				-- Nothing
-			else
+			if alive(obs_data.unit) then
 				local obstacle_obj = obs_data.unit:get_object(obs_data.obstacle_obj_name)
 
 				self._quad_field:remove_obstacle(obstacle_obj)
