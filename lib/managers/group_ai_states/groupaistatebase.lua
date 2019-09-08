@@ -524,9 +524,7 @@ function GroupAIStateBase:_do_teleport_ai(params)
 	local u = params.unit
 
 	if alive(u) then
-		if u:movement()._active_actions[1] and u:movement()._active_actions[1]:type() == "hurt" and u:movement()._active_actions[1]:hurt_type() == "death" then
-			-- Nothing
-		else
+		if not u:movement()._active_actions[1] or u:movement()._active_actions[1]:type() ~= "hurt" or u:movement()._active_actions[1]:hurt_type() ~= "death" then
 			u:movement():action_request(params.action_desc)
 		end
 	end
@@ -3106,11 +3104,7 @@ function GroupAIStateBase:get_ambience_flag()
 end
 
 function GroupAIStateBase:set_whisper_mode(enabled)
-	if enabled then
-		enabled = true
-	else
-		enabled = false
-	end
+	enabled = enabled and true or false
 
 	if enabled == self._whisper_mode then
 		return

@@ -2266,9 +2266,7 @@ function PlayerStandard:_do_melee_damage(t, bayonet_melee, col_ray)
 				}
 				local stack = self._state_data.stacking_dmg_mul.melee
 
-				if stack[1] and t < stack[1] then
-					-- Nothing
-				else
+				if not stack[1] or t >= stack[1] then
 					stack[2] = 0
 				end
 			end
@@ -3141,8 +3139,7 @@ function PlayerStandard:_start_action_intimidate(t)
 			interact_type = "cmd_down"
 
 			if self._shout_down_t and t < self._shout_down_t + 2 then
-				if false then
-				end
+				-- Nothing
 			end
 		elseif voice_type == "come" then
 			interact_type = "cmd_come"

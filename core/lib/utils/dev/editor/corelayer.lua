@@ -1504,7 +1504,8 @@ function Layer:clone_edited_values(unit, source)
 
 		if projection_texture then
 			local is_projection = CoreEditorUtils.is_projection_light(source, light, "projection")
-			local is_spot = not (string.match(light:properties(), "omni") and true or false)
+			local is_spot = (not string.match(light:properties(), "omni") or false) and true
+
 			if is_projection and is_spot then
 				new_light:set_projection_texture(Idstring(projection_texture), false, false)
 
@@ -1737,6 +1738,7 @@ function Layer:test_spawn(type)
 				c_rad = max_rad * 1
 
 				for _, unit in ipairs(row_units) do
+					-- Nothing
 				end
 
 				max_rad = 0

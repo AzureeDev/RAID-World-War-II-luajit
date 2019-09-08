@@ -634,9 +634,7 @@ end
 function CoreLuaProfiler:update(t, dt)
 	self:notebook_change()
 
-	if self:notebook_selected() == 0 then
-		-- Nothing
-	else
+	if self:notebook_selected() ~= 0 then
 		if core_lua_profiler_reload then
 			core_lua_profiler_reload = false
 

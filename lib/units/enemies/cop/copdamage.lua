@@ -196,24 +196,16 @@ function CopDamage:dismember(dismember_part, variant, allow_network)
 
 	if variant == "explosion" then
 		local force_left_right = string.match(dismember_part, "_l_")
-
-		if force_left_right then
-			force_left_right = "r"
-		else
-			force_left_right = "l"
-		end
-
+		force_left_right = force_left_right and "r" or "l"
 		local additional_part = self:_random_dismember_part(force_left_right)
 
 		self:_dismember_part(additional_part, tweak_data.character.dismemberment_data.blood_decal_data[additional_part], variant)
 	end
 
-	if allow_network then
-		if false then
+	if allow_network and false then
 			managers.network:session():send_to_peers("sync_part_dismemberment", self._unit, dismember_part, variant)
 		end
 	end
-end
 
 function CopDamage:_random_dismember_part(force_left_right)
 	local head = ({
@@ -861,13 +853,7 @@ function CopDamage:damage_fire(attack_data)
 		local fire_dot_data = attack_data.fire_dot_data
 		local flammable = nil
 		local char_tweak = tweak_data.character[self._unit:base()._tweak_table]
-
-		if char_tweak.flammable == nil then
-			flammable = true
-		else
-			flammable = char_tweak.flammable
-		end
-
+		flammable = char_tweak.flammable == nil and true or char_tweak.flammable
 		local distance = 1000
 		local hit_loc = attack_data.col_ray.hit_position
 
@@ -1871,11 +1857,7 @@ function CopDamage:set_mover_collision_state(state)
 end
 
 function CopDamage:anim_clbk_mover_collision_state(unit, state)
-	if state == "true" then
-		state = true
-	else
-		state = false
-	end
+	state = state == "true" and true or false
 
 	self:set_mover_collision_state(state)
 end
@@ -2656,7 +2638,14 @@ function CopDamage:build_suppression(amount, panic_chance)
 	end
 
 	local amount_val = nil
-	amount_val = (amount ~= "max" and amount ~= "panic" or (sup_tweak.brown_point or sup_tweak.react_point)[2]) and (Network:is_server() and self._suppression_hardness_t and t < self._suppression_hardness_t and amount * 0.5 or amount)
+
+	if amount == "max" or amount == "panic" then
+		amount_val = (sup_tweak.brown_point or sup_tweak.react_point)[2]
+	elseif Network:is_server() and self._suppression_hardness_t and t < self._suppression_hardness_t then
+		amount_val = amount * 0.5
+	else
+		amount_val = amount
+	end
 
 	if not Network:is_server() then
 		local sync_amount = nil

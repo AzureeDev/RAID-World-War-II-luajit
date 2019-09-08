@@ -70,9 +70,7 @@ function BoxGuiObject:_create_side(panel, side, type)
 		return
 	elseif type == 1 then
 		-- Nothing
-	elseif type == 2 then
-		-- Nothing
-	else
+	elseif type ~= 2 then
 		Application:error("[BoxGuiObject] Type", type, "is not supported")
 		Application:stack_dump()
 

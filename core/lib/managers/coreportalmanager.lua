@@ -568,6 +568,7 @@ end
 
 function PortalUnitGroup:lock_units()
 	for _, unit in ipairs(self._units) do
+		-- Nothing
 	end
 end
 

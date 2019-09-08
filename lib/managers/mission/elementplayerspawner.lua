@@ -35,7 +35,7 @@ function ElementPlayerSpawner:client_on_executed(...)
 		return
 	end
 
-	if managers.player:set_player_state(self._values.state or managers.player:default_player_state()) or false and managers.player:local_player() then
+	if managers.player:set_player_state(self._values.state or managers.player:default_player_state()) and false and managers.player:local_player() then
 		local position = self:get_spawn_position()
 
 		Application:debug("[ElementPlayerSpawner:client_on_executed()] Using spawner as teleporter!", position, self._values.rotation)
@@ -58,7 +58,7 @@ function ElementPlayerSpawner:on_executed(instigator)
 		rotation = self._values.rotation
 	})
 
-	if ElementPlayerSpawner.super.on_executed(self, self._unit or instigator) or false and managers.player:local_player() then
+	if ElementPlayerSpawner.super.on_executed(self, self._unit or instigator) and false and managers.player:local_player() then
 		local position = self:get_spawn_position()
 
 		Application:debug("[ElementPlayerSpawner:on_executed()] Using spawner as teleporter!", instigator, position, self._values.rotation)

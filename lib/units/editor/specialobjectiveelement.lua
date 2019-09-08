@@ -95,6 +95,7 @@ function SpecialObjectiveUnitElement:test_element()
 		local SO_access_strings = managers.navigation:convert_access_filter_to_table(self._hed.SO_access)
 
 		for _, access_category in ipairs(SO_access_strings) do
+			-- Nothing
 		end
 	else
 		spawn_unit_name = self._hed.test_unit

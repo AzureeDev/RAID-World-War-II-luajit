@@ -2151,9 +2151,7 @@ function CopLogicBase._get_logic_state_from_reaction(data, reaction)
 	if not reaction or reaction <= AIAttentionObject.REACT_SCARED then
 		if data.char_tweak.calls_in and not police_is_being_called and not managers.groupai:state():is_police_called() and not data.unit:movement():cool() and not data.is_converted then
 			result = "arrest"
-		elseif data.unit:movement():cool() then
-			-- Nothing
-		else
+		elseif not data.unit:movement():cool() then
 			result = "idle"
 		end
 	elseif reaction == AIAttentionObject.REACT_ARREST and not data.is_converted then

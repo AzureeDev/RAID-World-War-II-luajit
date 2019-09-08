@@ -168,6 +168,7 @@ function WorldDefinition:init(params)
 
 	if self.is_streamed_world then
 		for _, package in ipairs(self._loaded_packages) do
+			-- Nothing
 		end
 
 		if not WorldDefinition.ASYNC_CALLBACKS then
@@ -731,6 +732,7 @@ end
 function WorldDefinition:init_done()
 	if self._continent_init_packages then
 		for _, package in ipairs(self._continent_init_packages) do
+			-- Nothing
 		end
 	end
 

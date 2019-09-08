@@ -89,8 +89,7 @@ function MenuMainState:at_enter(old_state)
 		Global.open_trial_buy = nil
 
 		managers.menu:open_node("trial_info")
-	elseif not has_invite and not managers.network:session() then
-		if false then
+	elseif not has_invite and not managers.network:session() and false then
 			local function yes_func()
 				MenuCallbackHandler:play_safehouse({
 					skip_question = true
@@ -100,7 +99,6 @@ function MenuMainState:at_enter(old_state)
 			managers.menu:show_question_start_tutorial({
 				yes_func = yes_func
 			})
-		end
 	end
 
 	if Global.savefile_manager.backup_save_enabled then

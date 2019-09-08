@@ -400,9 +400,7 @@ function PlayerManager:_internal_load()
 	self:refill_grenades()
 	self:_set_body_bags_amount(self._local_player_body_bags or self:total_body_bags())
 
-	if self._respawn then
-		-- Nothing
-	else
+	if not self._respawn then
 		self:_add_level_equipment(player)
 
 		for i, name in ipairs(self._global.default_kit.special_equipment_slots) do
@@ -556,6 +554,7 @@ function PlayerManager:setup_viewports()
 
 	if configs then
 		for k, player in ipairs(self._players) do
+			-- Nothing
 		end
 	else
 		Application:error("Unsupported number of players: " .. tostring(self._last_id))
@@ -590,12 +589,7 @@ function PlayerManager:set_player_state(state, state_data)
 
 	if state == "standard" and carry_data then
 		local carry_tweak = tweak_data.carry[carry_data.carry_id]
-
-		if carry_tweak.is_corpse then
-			state = "carry_corpse"
-		else
-			state = "carry"
-		end
+		state = carry_tweak.is_corpse and "carry_corpse" or "carry"
 	end
 
 	if state == self._current_state then

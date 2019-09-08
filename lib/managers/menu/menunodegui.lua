@@ -259,11 +259,13 @@ end
 
 function MenuNodeGui:_setup_item_panel(safe_rect, res)
 	if self._align == "mid" and false then
-		self._item_panel_y = self._item_panel_y or { first = self._item_panel_parent:h() / 2, current = self._item_panel_parent:h() / 2 }
+		self._item_panel_y = self._item_panel_y or {
+			first = self._item_panel_parent:h() / 2,
+			current = self._item_panel_parent:h() / 2
+		}
+
 		if self:_item_panel_height() < self._item_panel_parent:h() then
 			self._item_panel_y.target = self._item_panel_parent:h() / 2
-		else
-			-- Nothing
 		end
 		self.item_panel:set_shape(0, self.item_panel:y(), safe_rect.width, self:_item_panel_height())
 		if not self._item_panel_y then

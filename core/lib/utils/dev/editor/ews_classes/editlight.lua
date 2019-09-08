@@ -325,7 +325,8 @@ function EditUnitLight:update_light_ctrls_from_light(light)
 	CoreEws.change_slider_and_number_value(self._spot_start_angle_params, light:spot_angle_start())
 	CoreEws.change_slider_and_number_value(self._spot_end_angle_params, light:spot_angle_end())
 
-	local is_spot = not (string.match(light:properties(), "omni") and true or false)
+	local is_spot = (not string.match(light:properties(), "omni") or false) and true
+
 	self._spot_start_angle_params.number_ctrlr:set_enabled(is_spot)
 	self._spot_start_angle_params.slider_ctrlr:set_enabled(is_spot)
 	self._spot_end_angle_params.number_ctrlr:set_enabled(is_spot)

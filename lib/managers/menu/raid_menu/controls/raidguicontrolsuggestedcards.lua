@@ -75,6 +75,7 @@ end
 
 function RaidGUIControlSuggestedCards:_delete_items()
 	for index, control in pairs(self._suggested_cards_panel._controls) do
+		-- Nothing
 	end
 
 	self._suggested_cards_panel:clear()

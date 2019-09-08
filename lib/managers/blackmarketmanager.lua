@@ -1486,9 +1486,7 @@ function BlackMarketManager:_get_skill_stats(name, category, slot, base_stats, m
 				end
 
 				skill_stats[stat.name].skill_in_effect = managers.player:has_category_upgrade(name, "clip_ammo_increase") or managers.player:has_category_upgrade("weapon", "clip_ammo_increase")
-			elseif stat.name == "totalammo" then
-				-- Nothing
-			else
+			elseif stat.name ~= "totalammo" then
 				base_value = math.max(base_stats[stat.name].value + mods_stats[stat.name].value, 0)
 
 				if base_stats[stat.name].index and mods_stats[stat.name].index then
@@ -2138,9 +2136,7 @@ function BlackMarketManager:get_crafted_item_amount(category, id)
 			end
 		elseif category == "character" then
 			-- Nothing
-		elseif category == "armors" then
-			-- Nothing
-		else
+		elseif category ~= "armors" then
 			break
 		end
 	end
@@ -3852,9 +3848,7 @@ function BlackMarketManager:damage_multiplier(name, category, silencer, detectio
 	end
 
 	if current_state then
-		if current_state:in_steelsight() then
-			-- Nothing
-		else
+		if not current_state:in_steelsight() then
 			multiplier = multiplier + 1 - managers.player:upgrade_value(category, "hip_fire_damage_multiplier", 1)
 		end
 	end

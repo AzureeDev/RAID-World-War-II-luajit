@@ -1531,9 +1531,7 @@ function BaseNetworkSession:on_dropin_progress_received(dropin_peer_id, progress
 	if not old_drop_in_prog or old_drop_in_prog < progress_percentage then
 		peer:set_drop_in_progress(progress_percentage)
 
-		if game_state_machine:last_queued_state_name() == "ingame_waiting_for_players" then
-			-- Nothing
-		else
+		if game_state_machine:last_queued_state_name() ~= "ingame_waiting_for_players" then
 			managers.menu:update_person_joining(dropin_peer_id, progress_percentage)
 		end
 	end

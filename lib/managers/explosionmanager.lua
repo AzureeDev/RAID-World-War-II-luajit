@@ -204,9 +204,7 @@ function ExplosionManager:detect_and_give_dmg(params)
 					elseif CopDamage.is_gangster(type) then
 						count_gangsters = count_gangsters + 1
 					elseif type ~= "russian" and type ~= "german" and type ~= "spanish" and type ~= "american" and type ~= "jowi" then
-						if type == "hoxton" then
-							-- Nothing
-						else
+						if type ~= "hoxton" then
 							count_cops = count_cops + 1
 						end
 					end
@@ -265,9 +263,7 @@ function ExplosionManager:detect_and_give_dmg(params)
 					elseif CopDamage.is_gangster(type) then
 						count_gangster_kills = count_gangster_kills + 1
 					elseif type ~= "russian" and type ~= "german" and type ~= "spanish" then
-						if type == "american" then
-							-- Nothing
-						else
+						if type ~= "american" then
 							count_cop_kills = count_cop_kills + 1
 						end
 					end

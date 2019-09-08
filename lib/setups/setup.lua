@@ -459,9 +459,7 @@ function Setup:_start_loading_screen()
 		load_level_data.scale_tweak_data = tweak_data.scale
 		load_level_data.tip_id = tweak_data.tips:get_a_tip()
 
-		if using_steam_controller then
-			-- Nothing
-		else
+		if not using_steam_controller then
 			local coords = tweak_data:get_controller_help_coords()
 			load_level_data.controller_coords = coords and coords[table.random({
 				"normal",

@@ -146,12 +146,7 @@ function Ladder:get_normal_move_offset(pos)
 
 	local normal_move_offset = math.dot(self._normal, mvec1)
 	local h_dot = mvector3.dot(self._up, mvec1)
-
-	if self._height < h_dot and h_dot < self._height + self._exit_on_top_offset then
-		normal_move_offset = -1
-	else
-		normal_move_offset = math.lerp(0, self._normal_target_offset - normal_move_offset, 0.1)
-	end
+	normal_move_offset = self._height < h_dot and h_dot < self._height + self._exit_on_top_offset and -1 or math.lerp(0, self._normal_target_offset - normal_move_offset, 0.1)
 
 	return normal_move_offset
 end
