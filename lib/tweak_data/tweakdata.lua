@@ -103,7 +103,7 @@ function TweakData:get_raw_value(...)
 	local value = self
 	local v = nil
 
-	for i = 1, #arg, 1 do
+	for i = 1, #arg do
 		v = arg[i]
 
 		if not value[v] then
@@ -809,7 +809,7 @@ You've reached the end of our PAX EAST demo.
 		fadein_delay = 1
 	}
 	self.experience_manager = {
-		level_failed_multiplier = 0.01,
+		level_failed_multiplier = 0.1,
 		human_player_multiplier = {
 			1,
 			1.2,
@@ -819,10 +819,10 @@ You've reached the end of our PAX EAST demo.
 		level_diff_max_multiplier = 2,
 		difficulty_multiplier = {}
 	}
-	self.experience_manager.difficulty_multiplier[TweakData.DIFFICULTY_1] = 1
-	self.experience_manager.difficulty_multiplier[TweakData.DIFFICULTY_2] = 2
-	self.experience_manager.difficulty_multiplier[TweakData.DIFFICULTY_3] = 5
-	self.experience_manager.difficulty_multiplier[TweakData.DIFFICULTY_4] = 10
+	self.experience_manager.difficulty_multiplier[TweakData.DIFFICULTY_1] = 2
+	self.experience_manager.difficulty_multiplier[TweakData.DIFFICULTY_2] = 4
+	self.experience_manager.difficulty_multiplier[TweakData.DIFFICULTY_3] = 8
+	self.experience_manager.difficulty_multiplier[TweakData.DIFFICULTY_4] = 15
 	local multiplier = 1
 	local level_xp_requirements = {
 		0,
@@ -868,7 +868,7 @@ You've reached the end of our PAX EAST demo.
 	}
 	self.experience_manager.levels = {}
 
-	for i = 1, #level_xp_requirements, 1 do
+	for i = 1, #level_xp_requirements do
 		self.experience_manager.levels[i] = {
 			points = level_xp_requirements[i] * multiplier
 		}
@@ -878,7 +878,7 @@ You've reached the end of our PAX EAST demo.
 	local exp_step_end = 193
 	local exp_step = 1 / (exp_step_end - exp_step_start)
 
-	for i = 146, exp_step_end, 1 do
+	for i = 146, exp_step_end do
 		self.experience_manager.levels[i] = {
 			points = math.round(22000 * exp_step * (i - exp_step_start) - 6000) * multiplier
 		}
